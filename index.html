@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FluentFlow — Tu camino al inglés fluido</title>
+<title>BontiLand — Tu camino al inglés fluido</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -865,7 +865,7 @@
     <!-- Hero (always visible) -->
     <div class="wm-hero">
       <span class="wm-hero-emoji" id="heroEmoji">🚀</span>
-      <h2 id="heroTitle">Bienvenido a FluentFlow</h2>
+      <h2 id="heroTitle">Bienvenido a BontiLand</h2>
       <p id="heroSubtitle">Tu plataforma personal para hablar inglés fluido</p>
     </div>
 
@@ -954,7 +954,7 @@
 <div class="app">
   <!-- MOBILE TOP BAR -->
   <div class="mobile-topbar" id="mobileTopbar">
-    <span class="logo-text">FluentFlow</span>
+    <span class="logo-text">BontiLand</span>
     <div class="xp-area">
       <span class="streak-m" id="mStreak">🔥 0</span>
       <span class="level-m" id="mLevel">A2</span>
@@ -965,7 +965,7 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="logo">
-      <h1>FluentFlow</h1>
+      <h1>BontiLand</h1>
       <p>English Learning System</p>
     </div>
 
@@ -1437,7 +1437,7 @@ const TROPHIES = [
 //  STATE
 // ═══════════════════════════════════════════════════════
 
-let state = JSON.parse(localStorage.getItem('fluentflow_state') || '{}');
+let state = JSON.parse(localStorage.getItem('BontiLand_state') || '{}');
 state = Object.assign({
   xp: 0,
   streak: 0,
@@ -1462,7 +1462,7 @@ state = Object.assign({
 }, state);
 
 function saveState() {
-  localStorage.setItem('fluentflow_state', JSON.stringify(state));
+  localStorage.setItem('BontiLand_state', JSON.stringify(state));
 }
 
 function addXP(amount, label) {
@@ -2109,11 +2109,11 @@ let selectedGoal = 'general';
 let selectedTime = '20';
 
 const heroData = [
-  { emoji: '🚀', title: 'Bienvenido a FluentFlow', sub: 'Tu plataforma personal para hablar inglés fluido' },
+  { emoji: '🚀', title: 'Bienvenido a BontiLand', sub: 'Tu plataforma personal para hablar inglés fluido' },
   { emoji: '🎯', title: '¿Cuál es tu meta?', sub: 'Elige lo que más te motiva' },
   { emoji: '⏱️', title: 'Tu compromiso diario', sub: 'Pequeños pasos crean grandes cambios' },
   { emoji: '🗺️', title: '5 módulos poderosos', sub: 'Metodología científica de adquisición' },
-  { emoji: '✨', title: '¡Ya eres parte de FluentFlow!', sub: 'Empieza hoy, habla mañana' },
+  { emoji: '✨', title: '¡Ya eres parte de BontiLand!', sub: 'Empieza hoy, habla mañana' },
 ];
 
 function buildWelcomeDots() {
@@ -2216,7 +2216,7 @@ function finishTour() {
     // Welcome XP bonus
     addXP(25, '🎁 Bono de bienvenida');
     const name = state.userName || '';
-    showToast(`¡Hola${name ? ' ' + name : ''}! Bienvenido/a a FluentFlow 🚀`, 'success');
+    showToast(`¡Hola${name ? ' ' + name : ''}! Bienvenido/a a BontiLand 🚀`, 'success');
   }, 600);
 }
 
