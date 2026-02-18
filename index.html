@@ -43,17 +43,12 @@
     z-index: 0;
   }
 
-  /* ── LAYOUT ── */
-  .app { position: relative; z-index: 1; display: flex; height: 100vh; }
+  /* ── LAYOUT — handled in responsive section below ── */
 
-  /* ── SIDEBAR ── */
+  /* Sidebar base (always needed) */
   .sidebar {
-    width: 240px;
     background: var(--surface);
-    border-right: 1px solid var(--border);
     display: flex;
-    flex-direction: column;
-    padding: 24px 0;
     flex-shrink: 0;
   }
 
@@ -475,194 +470,28 @@
   @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: none; } }
 
   /* ══════════════════════════════════════════
-     MOBILE-FIRST RESPONSIVE — complete overhaul
+     MOBILE-FIRST — Layout base (mobile default)
   ══════════════════════════════════════════ */
-  @media (max-width: 700px) {
 
-    /* ── Core layout: stack vertically ── */
-    .app {
-      flex-direction: column;
-      height: 100dvh;          /* dynamic viewport height */
-      overflow: hidden;
-    }
-
-    /* ── Sidebar becomes a bottom tab bar ── */
-    .sidebar {
-      width: 100%;
-      height: 64px;
-      min-height: 64px;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-around;
-      padding: 0;
-      border-right: none;
-      border-top: 1px solid var(--border);
-      order: 2;                /* push to bottom */
-    }
-
-    /* Hide logo + XP bar on mobile (in sidebar) */
-    .logo, .sidebar-bottom { display: none; }
-
-    /* Nav items become compact icon tabs */
-    .nav-item {
-      flex-direction: column;
-      gap: 2px;
-      padding: 8px 4px;
-      border-left: none;
-      border-top: 3px solid transparent;
-      border-bottom: none;
-      flex: 1;
-      justify-content: center;
-      align-items: center;
-      font-size: 10px;
-    }
-    .nav-item.active {
-      border-left: none;
-      border-top-color: var(--accent);
-      background: rgba(108,99,255,.1);
-    }
-    .nav-icon { font-size: 20px; width: auto; }
-    /* Show short labels on mobile */
-    .nav-item span:not(.nav-icon) {
-      display: block !important;
-      font-size: 9px;
-      color: inherit;
-    }
-
-    /* ── Main area scrolls above tab bar ── */
-    .main {
-      flex: 1;
-      order: 1;
-      padding: 16px 14px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      height: 0;              /* flex child needs this to scroll */
-    }
-
-    /* ── Page header ── */
-    .page-header h2 { font-size: 20px; }
-    .page-header { margin-bottom: 16px; }
-
-    /* ── Home grid: 2 cols ── */
-    .home-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-    .stat-card { padding: 14px; }
-    .stat-value { font-size: 24px; }
-    .stat-icon { font-size: 20px; top: 10px; right: 10px; }
-
-    /* ── Daily mission ── */
-    .daily-mission { padding: 16px; margin-bottom: 16px; }
-    .mission-items { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .mission-item { padding: 10px 12px; }
-    .mi-text { font-size: 11px; }
-
-    /* ── Cards ── */
-    .card { padding: 16px; }
-
-    /* ── Home streak/tip: stack ── */
-    #page-home > div:last-child {
-      grid-template-columns: 1fr !important;
-    }
-    .streak-count { font-size: 36px; }
-
-    /* ── Speaking ── */
-    .phrase-card { padding: 20px 16px; }
-    .phrase-en { font-size: 18px; }
-    .speaking-controls { gap: 8px; }
-    .record-btn { width: 52px; height: 52px; font-size: 20px; }
-
-    /* ── Sentence builder ── */
-    .words-pool, .sentence-slots { padding: 12px; min-height: 52px; }
-    .word-chip, .slot-chip { font-size: 13px; padding: 6px 12px; }
-
-    /* ── Flashcard ── */
-    .flashcard { padding: 32px 20px; min-height: 160px; }
-    .fc-word { font-size: 28px; }
-    .fc-translation { font-size: 20px; }
-    .vocab-actions { gap: 8px; }
-    .vocab-actions .btn { padding: 9px 14px; font-size: 13px; }
-
-    /* ── Word list: 2 cols ── */
-    .word-list { grid-template-columns: 1fr 1fr; }
-
-    /* ── Conversation ── */
-    .scenario-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-    .scenario-btn { padding: 12px 8px; }
-    .scenario-icon { font-size: 22px; margin-bottom: 4px; }
-    .scenario-name { font-size: 11px; }
-    .chat-messages { min-height: 200px; max-height: 260px; }
-    .chat-header { padding: 12px 14px; }
-    .chat-options { padding: 10px 14px; gap: 6px; }
-    .chat-option { font-size: 12px; padding: 7px 11px; }
-    .chat-input-row { padding: 10px 14px; gap: 8px; }
-    .chat-input { font-size: 14px; }
-
-    /* ── Progress ── */
-    .skills-grid { grid-template-columns: 1fr; }
-    .trophy-row { gap: 8px; }
-    .trophy { padding: 12px 10px; min-width: 70px; }
-    .trophy-icon { font-size: 22px; }
-    #page-progress > div:nth-child(2) {
-      grid-template-columns: 1fr !important;
-    }
-
-    /* ── Vocab progress bar ── */
-    .vocab-progress-bar { padding: 12px 14px; }
-    .vp-label { font-size: 11px; min-width: 50px; }
-
-    /* ── Category tabs ── */
-    .category-tabs { gap: 6px; }
-    .tab { padding: 5px 12px; font-size: 12px; }
-
-    /* ── Tip box ── */
-    .tip-box { font-size: 12px; padding: 10px 12px; }
-
-    /* ── Toast: full width on mobile ── */
-    .toast-container { top: 8px; right: 8px; left: 8px; }
-    .toast { max-width: 100%; }
-
-    /* ── Welcome modal: full screen on mobile ── */
-    .welcome-modal {
-      width: 100vw;
-      min-height: 100dvh;
-      border-radius: 0;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-    .wm-hero { padding: 28px 20px 20px; }
-    .wm-hero-emoji { font-size: 48px; margin-bottom: 10px; }
-    .wm-hero h2 { font-size: 22px; }
-    .wm-step { padding: 20px 20px 8px; }
-    .wm-goal-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .wm-feature-row { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .wm-footer { padding: 16px 20px 24px; }
-    .wm-dots { padding: 14px 20px 0; }
-
-    /* ── Phrase nav ── */
-    .phrase-nav { gap: 8px; }
-    .phrase-nav .btn { padding: 8px 14px; font-size: 13px; }
+  /* Core shell */
+  .app {
+    position: relative; z-index: 1;
+    display: flex;
+    flex-direction: column;        /* mobile: column */
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
-  /* Small phones (< 380px) */
-  @media (max-width: 380px) {
-    .home-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .mission-items { grid-template-columns: 1fr; }
-    .scenario-grid { grid-template-columns: repeat(2, 1fr); }
-    .word-list { grid-template-columns: 1fr; }
-    .vocab-actions { flex-wrap: wrap; justify-content: center; }
-    .wm-goal-grid, .wm-feature-row { grid-template-columns: 1fr; }
-    .phrase-en { font-size: 16px; }
-  }
-
-  /* ── MOBILE TOP BAR ── */
+  /* Mobile top bar — shown on mobile, hidden on desktop */
   .mobile-topbar {
-    display: none;
+    display: flex;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: 10px 16px;
     align-items: center;
     gap: 12px;
     position: sticky; top: 0; z-index: 100;
+    flex-shrink: 0;
   }
   .mobile-topbar .logo-text {
     font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
@@ -670,13 +499,349 @@
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
   .mobile-topbar .xp-area { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-  .mobile-topbar .xp-track { width: 80px; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .mobile-topbar .xp-track { width: 64px; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
   .mobile-topbar .xp-fill-m { height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent2)); border-radius: 99px; transition: width .6s; }
   .mobile-topbar .level-m { font-size: 11px; color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 700; }
   .mobile-topbar .streak-m { font-size: 13px; }
 
-  @media (max-width: 700px) {
-    .mobile-topbar { display: flex; }
+  /* Sidebar — mobile: bottom tab bar */
+  .sidebar {
+    width: 100%;
+    height: 60px;
+    min-height: 60px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    order: 3;
+    flex-shrink: 0;
+    /* Ensure tab bar is always visible */
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+  }
+
+  /* Hide logo and XP bar in tab bar */
+  .logo, .sidebar-bottom { display: none !important; }
+
+  /* Nav items = icon tabs */
+  .nav-item {
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 2px;
+    border-left: none !important;
+    border-top: 3px solid transparent;
+    border-bottom: none;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    font-size: 9px;
+    color: var(--muted);
+  }
+  .nav-item.active {
+    border-left: none !important;
+    border-top-color: var(--accent);
+    background: rgba(108,99,255,.1);
+    color: var(--accent);
+  }
+  .nav-item:hover { background: rgba(108,99,255,.06); }
+  .nav-icon { font-size: 18px; width: auto; }
+  .nav-item > span:not(.nav-icon) {
+    display: block !important;
+    font-size: 9px;
+  }
+
+  /* Main content — scrollable middle section */
+  .main {
+    flex: 1;
+    order: 2;
+    padding: 14px 14px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Do NOT use height:0 — it breaks iOS Safari */
+  }
+
+  /* ── Pages ── */
+  .page-header { margin-bottom: 14px; }
+  .page-header h2 { font-size: 19px; }
+  .page-header p { font-size: 12px; }
+
+  /* ── Home ── */
+  .home-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stat-card { padding: 12px; }
+  .stat-value { font-size: 22px; }
+  .stat-icon { font-size: 18px; top: 10px; right: 10px; }
+  .stat-label { font-size: 11px; }
+
+  .daily-mission { padding: 14px; margin-bottom: 14px; }
+  .mission-header h3 { font-size: 15px; }
+  .mission-items { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mission-item { padding: 9px 10px; gap: 8px; }
+  .mi-icon { font-size: 16px; }
+  .mi-text { font-size: 11px; }
+
+  /* home streak + tip: single column */
+  #page-home > div:last-child {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+  .streak-fire { font-size: 36px; }
+  .streak-count { font-size: 32px; }
+  .streak-label { font-size: 12px; }
+
+  /* ── Cards ── */
+  .card { padding: 14px; margin-bottom: 12px; }
+  .card-title { font-size: 14px; margin-bottom: 12px; }
+
+  /* ── Speaking ── */
+  .category-tabs { gap: 6px; flex-wrap: wrap; }
+  .tab { padding: 5px 10px; font-size: 12px; }
+
+  .phrase-card { padding: 18px 14px; }
+  .phrase-en { font-size: 17px; line-height: 1.4; }
+  .phrase-phonetic { font-size: 12px; }
+  .phrase-es { font-size: 13px; }
+
+  .speaking-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .speaking-controls .btn { padding: 9px 14px; font-size: 13px; }
+  .record-btn { width: 50px; height: 50px; font-size: 20px; }
+
+  .phrase-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .phrase-nav .btn { padding: 9px 14px; font-size: 13px; }
+
+  .tip-box { font-size: 12px; padding: 10px 12px; }
+
+  /* ── Sentences ── */
+  .words-pool, .sentence-slots {
+    padding: 10px;
+    min-height: 48px;
+    gap: 7px;
+  }
+  .word-chip, .slot-chip { font-size: 13px; padding: 6px 11px; }
+
+  /* ── Vocabulary ── */
+  .vocab-progress-bar { padding: 10px 12px; gap: 10px; margin-bottom: 10px; }
+  .vp-label { font-size: 11px; min-width: 44px; }
+  .vp-count { font-size: 12px; }
+
+  .flashcard-container { margin-bottom: 14px; }
+  .flashcard { min-height: 160px; padding: 28px 16px; }
+  .fc-word { font-size: 26px; }
+  .fc-phonetic { font-size: 12px; }
+  .fc-translation { font-size: 20px; }
+  .fc-example { font-size: 13px; }
+  .fc-hint { font-size: 12px; }
+
+  .vocab-actions { gap: 8px; }
+  .vocab-actions .btn { flex: 1; justify-content: center; padding: 10px 8px; font-size: 13px; }
+
+  .word-list { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .word-list-item { padding: 10px 12px; }
+  .word-list-item .wli-en { font-size: 13px; }
+  .word-list-item .wli-es { font-size: 11px; }
+
+  /* ── Conversation ── */
+  .scenario-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin-bottom: 12px;
+  }
+  .scenario-btn { padding: 10px 6px; border-radius: 10px; }
+  .scenario-icon { font-size: 20px; margin-bottom: 3px; }
+  .scenario-name { font-size: 10px; }
+
+  .chat-header { padding: 11px 14px; }
+  .chat-avatar { width: 34px; height: 34px; font-size: 16px; }
+  .chat-name { font-size: 13px; }
+  .chat-status { font-size: 10px; }
+  .chat-messages { min-height: 180px; max-height: 240px; padding: 14px; gap: 10px; }
+  .msg-bubble { font-size: 13px; padding: 9px 13px; }
+  .chat-options { padding: 8px 12px; gap: 6px; }
+  .chat-option { font-size: 12px; padding: 7px 10px; }
+  .chat-input-row { padding: 8px 12px; gap: 7px; }
+  .chat-input { font-size: 14px; padding: 9px 12px; }
+  .chat-input-row .btn { padding: 9px 14px; font-size: 13px; }
+
+  /* ── Progress ── */
+  .trophy-row { gap: 7px; flex-wrap: wrap; }
+  .trophy { padding: 10px 8px; min-width: 68px; flex: 1; }
+  .trophy-icon { font-size: 22px; }
+  .trophy-name { font-size: 10px; }
+
+  /* week + XP: single column */
+  #page-progress > div:nth-child(2) {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+  .week-grid { gap: 5px; }
+  .day-block { font-size: 10px; border-radius: 5px; }
+  .skills-grid { grid-template-columns: 1fr; gap: 0; }
+  .skill-row { margin-bottom: 10px; }
+  .skill-name { font-size: 12px; }
+
+  /* ── Sentence stats ── */
+  #page-sentences .card:last-child > div {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* ── General buttons ── */
+  .btn { padding: 9px 16px; font-size: 13px; }
+  .btn-primary, .btn-ghost, .btn-success, .btn-danger, .btn-warn {
+    min-height: 40px;
+  }
+
+  /* ── Toast ── */
+  .toast-container { top: auto; bottom: 72px; right: 10px; left: 10px; }
+  .toast { max-width: 100%; font-size: 13px; }
+
+  /* ── Welcome modal: full screen ── */
+  .welcome-overlay { align-items: flex-start; padding: 0; }
+  .welcome-modal {
+    width: 100vw;
+    height: 100dvh;
+    height: 100vh; /* fallback */
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  /* scrollable content area */
+  .wm-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  .wm-hero { padding: 20px 20px 14px; }
+  .wm-hero-emoji { font-size: 40px; margin-bottom: 6px; }
+  .wm-hero h2 { font-size: 20px; }
+  .wm-hero p { font-size: 12px; }
+  .wm-dots { padding: 10px 20px 0; }
+  .wm-step { padding: 14px 20px 8px; }
+  .wm-step h3 { font-size: 16px; margin-bottom: 6px; }
+  .wm-step p { font-size: 13px; }
+  .wm-goal-grid { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .wm-goal { padding: 10px 10px; font-size: 12px; }
+  .wm-feature-row { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .wm-feature { padding: 10px 10px; font-size: 12px; }
+  .wm-commitment { gap: 6px; margin-top: 10px; }
+  .wm-time-btn { padding: 10px 12px; font-size: 13px; }
+  /* sticky footer — always visible */
+  .wm-footer {
+    padding: 12px 20px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .wm-next { padding: 13px 28px; font-size: 14px; width: auto; }
+  .wm-skip { font-size: 12px; }
+
+  .home-bottom-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .progress-week-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
+
+  /* ── DESKTOP override ── */
+  @media (min-width: 701px) {
+    .app {
+      flex-direction: row;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .mobile-topbar { display: none !important; }
+    .sidebar {
+      width: 240px;
+      height: auto;
+      min-height: unset;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 24px 0;
+      border-right: 1px solid var(--border);
+      border-top: none;
+      order: 0;
+      position: static;
+      bottom: auto;
+    }
+    .logo, .sidebar-bottom { display: flex !important; }
+    .sidebar-bottom { flex-direction: column; }
+    .logo { display: block !important; }
+    .nav-item {
+      flex-direction: row;
+      gap: 12px;
+      padding: 12px 24px;
+      border-left: 3px solid transparent;
+      border-top: none !important;
+      flex: unset;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .nav-item.active {
+      border-left-color: var(--accent) !important;
+      border-top: none !important;
+    }
+    .nav-icon { font-size: 18px; width: 24px; }
+    .nav-item > span:not(.nav-icon) { font-size: 14px; }
+    .main {
+      flex: 1;
+      order: 0;
+      padding: 32px;
+      overflow-y: auto;
+      height: 100%;
+    }
+    /* Restore desktop grids */
+    .home-grid { grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { padding: 20px; }
+    .stat-value { font-size: 32px; }
+    .stat-icon { font-size: 28px; }
+    .stat-label { font-size: 12px; }
+    .mission-items { grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); }
+    #page-home > div:last-child { grid-template-columns: 1fr 1fr !important; }
+    .home-bottom-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .progress-week-grid { grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .card { padding: 24px; margin-bottom: 16px; }
+    .phrase-en { font-size: 26px; }
+    .fc-word { font-size: 36px; }
+    .word-list { grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); }
+    .scenario-grid { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    #page-progress > div:nth-child(2) { grid-template-columns: 1fr 1fr !important; }
+    .toast-container { top: 20px; bottom: auto; right: 20px; left: auto; }
+    .welcome-overlay { align-items: center; }
+    .welcome-modal { width: min(560px, calc(100vw - 32px)); max-height: 90vh; border-radius: 24px; }
+    .speaking-controls .btn { padding: 10px 20px; font-size: 14px; }
+    .record-btn { width: 64px; height: 64px; font-size: 24px; }
+    .vocab-actions .btn { flex: unset; padding: 10px 20px; }
+  }
+
+  /* Extra small phones */
+  @media (max-width: 360px) {
+    .mission-items { grid-template-columns: 1fr; }
+    .scenario-grid { grid-template-columns: repeat(2, 1fr); }
+    .word-list { grid-template-columns: 1fr; }
+    .wm-goal-grid, .wm-feature-row { grid-template-columns: 1fr; }
+    .home-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .phrase-en { font-size: 15px; }
+    .fc-word { font-size: 22px; }
   }
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -862,6 +1027,7 @@
 <div class="welcome-overlay" id="welcomeOverlay">
   <div class="welcome-modal">
 
+    <div class="wm-scrollable">
     <!-- Hero (always visible) -->
     <div class="wm-hero">
       <span class="wm-hero-emoji" id="heroEmoji">🚀</span>
@@ -941,8 +1107,9 @@
       </div>
 
     </div>
+    </div><!-- end wm-scrollable -->
 
-    <!-- Footer -->
+    <!-- Footer — STICKY, always visible -->
     <div class="wm-footer">
       <span class="wm-skip" id="wmSkip" onclick="skipTour()">Saltar tour</span>
       <button class="wm-next" id="wmNext" onclick="nextWelcomeStep()">Comenzar →</button>
@@ -1073,7 +1240,7 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="home-bottom-grid">
         <div class="card">
           <div class="card-title">🔥 Racha actual</div>
           <div class="streak-fire">🔥</div>
@@ -1269,7 +1436,7 @@
         <div class="trophy-row" id="trophyRow"></div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="progress-week-grid">
         <div class="card">
           <div class="card-title">📅 Esta semana</div>
           <div class="week-grid" id="weekGrid"></div>
