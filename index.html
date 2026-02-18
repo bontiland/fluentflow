@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FluentFlow — Tu camino al inglés fluido</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3e;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --accent4: #f7971e;
+    --text: #e8e8f0;
+    --muted: #8888aa;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(108,99,255,.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 80% 80%, rgba(255,101,132,.1) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── LAYOUT ── */
+  .app { position: relative; z-index: 1; display: flex; height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .logo h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all .2s;
+    border-left: 3px solid transparent;
+    font-size: 14px;
+    color: var(--muted);
+    user-select: none;
+  }
+
+  .nav-item:hover { color: var(--text); background: rgba(108,99,255,.08); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(108,99,255,.12); }
+  .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .xp-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .xp-track { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width .6s ease; }
+  .level-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(108,99,255,.2); border: 1px solid rgba(108,99,255,.3);
+    border-radius: 99px; padding: 4px 12px; font-size: 12px; color: var(--accent);
+    margin-bottom: 10px; font-family: 'Syne', sans-serif; font-weight: 700;
+  }
+
+  /* ── MAIN ── */
+  .main { flex: 1; overflow-y: auto; padding: 32px; }
+
+  .page { display: none; animation: fadeIn .3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: none; } }
+
+  /* ── COMMON COMPONENTS ── */
+  .page-header { margin-bottom: 28px; }
+  .page-header h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; }
+  .page-header p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; border: none; transition: all .2s;
+  }
+
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #7c73ff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,99,255,.3); }
+
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--surface2); }
+
+  .btn-success { background: var(--accent3); color: #000; }
+  .btn-danger { background: var(--accent2); color: #fff; }
+  .btn-warn { background: var(--accent4); color: #000; }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600;
+  }
+  .badge-purple { background: rgba(108,99,255,.2); color: var(--accent); border: 1px solid rgba(108,99,255,.3); }
+  .badge-green { background: rgba(67,233,123,.15); color: var(--accent3); border: 1px solid rgba(67,233,123,.2); }
+  .badge-red { background: rgba(255,101,132,.15); color: var(--accent2); border: 1px solid rgba(255,101,132,.2); }
+  .badge-orange { background: rgba(247,151,30,.15); color: var(--accent4); border: 1px solid rgba(247,151,30,.2); }
+
+  /* ── HOME ── */
+  .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin-bottom: 24px; }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .stat-card.s1::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .stat-card.s2::before { background: linear-gradient(90deg, var(--accent3), #38f9d7); }
+  .stat-card.s3::before { background: linear-gradient(90deg, var(--accent4), #f9d423); }
+  .stat-card.s4::before { background: linear-gradient(90deg, var(--accent2), #f093fb); }
+
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .stat-icon { font-size: 28px; position: absolute; right: 16px; top: 16px; opacity: .4; }
+
+  .daily-mission {
+    background: linear-gradient(135deg, rgba(108,99,255,.15), rgba(255,101,132,.1));
+    border: 1px solid rgba(108,99,255,.3);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .mission-header h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+
+  .mission-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 12px; }
+  .mission-item {
+    background: rgba(0,0,0,.3);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+    transition: all .2s;
+    border: 1px solid transparent;
+  }
+  .mission-item:hover { border-color: var(--accent); background: rgba(108,99,255,.1); }
+  .mission-item.done { opacity: .5; }
+  .mission-item .mi-icon { font-size: 20px; }
+  .mission-item .mi-text { font-size: 13px; }
+  .mission-item .mi-check { margin-left: auto; font-size: 16px; }
+
+  .streak-fire { font-size: 48px; text-align: center; margin: 8px 0; }
+  .streak-count { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; text-align: center; line-height: 1; }
+  .streak-label { text-align: center; color: var(--muted); font-size: 13px; }
+
+  /* ── SPEAKING TRAINER ── */
+  .phrase-card {
+    background: linear-gradient(135deg, var(--surface2), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .phrase-en { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .phrase-es { color: var(--muted); font-size: 15px; margin-bottom: 24px; }
+  .phrase-phonetic { color: var(--accent); font-size: 13px; font-style: italic; margin-bottom: 20px; }
+
+  .speaking-controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .record-btn {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--accent2);
+    border: none; cursor: pointer;
+    font-size: 24px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+    box-shadow: 0 4px 20px rgba(255,101,132,.3);
+  }
+  .record-btn:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(255,101,132,.4); }
+  .record-btn.recording {
+    animation: pulse 1s infinite;
+    background: #e63946;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(230,57,70,.5); }
+    50% { box-shadow: 0 0 0 14px rgba(230,57,70,0); }
+  }
+
+  .feedback-box {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-top: 16px;
+    font-size: 14px;
+    display: none;
+  }
+  .feedback-box.show { display: block; animation: fadeIn .3s; }
+  .feedback-good { border-left: 3px solid var(--accent3); }
+  .feedback-ok { border-left: 3px solid var(--accent4); }
+  .feedback-retry { border-left: 3px solid var(--accent2); }
+
+  .phrase-nav { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+
+  .category-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .tab {
+    padding: 6px 16px; border-radius: 99px; font-size: 13px; cursor: pointer;
+    border: 1px solid var(--border); color: var(--muted); transition: all .2s;
+  }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tab:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+
+  /* ── SENTENCE BUILDER ── */
+  .words-pool {
+    display: flex; flex-wrap: wrap; gap: 10px; padding: 20px;
+    background: var(--surface2); border-radius: var(--radius-sm);
+    min-height: 64px; margin-bottom: 16px;
+  }
+
+  .word-chip {
+    padding: 8px 16px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 99px;
+    cursor: pointer; font-size: 14px;
+    transition: all .2s;
+    user-select: none;
+  }
+  .word-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .word-chip.used { opacity: .3; pointer-events: none; }
+
+  .sentence-slots {
+    display: flex; flex-wrap: wrap; gap: 10px; padding: 20px;
+    background: rgba(108,99,255,.06); border: 2px dashed rgba(108,99,255,.3);
+    border-radius: var(--radius-sm); min-height: 64px;
+    margin-bottom: 16px;
+  }
+
+  .slot-chip {
+    padding: 8px 16px;
+    background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.4);
+    border-radius: 99px; cursor: pointer; font-size: 14px; color: var(--accent);
+    transition: all .2s;
+  }
+  .slot-chip:hover { background: rgba(255,101,132,.15); border-color: var(--accent2); color: var(--accent2); }
+
+  .sentence-result {
+    padding: 16px; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 500; display: none;
+    animation: fadeIn .3s;
+  }
+  .sentence-result.correct { background: rgba(67,233,123,.1); border: 1px solid rgba(67,233,123,.3); color: var(--accent3); }
+  .sentence-result.wrong { background: rgba(255,101,132,.1); border: 1px solid rgba(255,101,132,.3); color: var(--accent2); }
+
+  .grammar-tip {
+    background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.2);
+    border-radius: var(--radius-sm); padding: 14px;
+    font-size: 13px; color: var(--muted); margin-top: 12px; display: none;
+  }
+  .grammar-tip.show { display: block; }
+  .grammar-tip strong { color: var(--accent); }
+
+  /* ── VOCABULARY ── */
+  .flashcard-container { perspective: 1000px; margin-bottom: 24px; }
+  .flashcard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 48px 32px;
+    text-align: center;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform .5s;
+    position: relative;
+    min-height: 200px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .flashcard.flipped { transform: rotateY(180deg); }
+  .flashcard-front, .flashcard-back {
+    backface-visibility: hidden;
+    position: absolute;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .flashcard-back { transform: rotateY(180deg); }
+  .fc-word { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; }
+  .fc-phonetic { color: var(--accent); font-size: 14px; margin-top: 6px; }
+  .fc-translation { font-size: 24px; font-weight: 600; color: var(--accent3); }
+  .fc-example { color: var(--muted); font-size: 14px; margin-top: 12px; font-style: italic; }
+
+  .fc-hint { color: var(--muted); font-size: 13px; margin-top: 16px; }
+
+  .vocab-actions { display: flex; gap: 10px; justify-content: center; }
+  .vocab-progress-bar {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 24px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .vp-label { font-size: 13px; color: var(--muted); min-width: 80px; }
+  .vp-track { flex: 1; height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .vp-fill { height: 100%; border-radius: 99px; transition: width .5s ease; }
+  .vp-count { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; min-width: 48px; text-align: right; }
+
+  .word-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+  .word-list-item {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 12px 16px; font-size: 13px; cursor: pointer; transition: all .2s;
+  }
+  .word-list-item:hover { border-color: var(--accent); }
+  .word-list-item .wli-en { font-weight: 600; }
+  .word-list-item .wli-es { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .word-list-item .wli-status { font-size: 10px; margin-top: 6px; }
+
+  /* ── CONVERSATION ── */
+  .chat-container {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 0; overflow: hidden; margin-bottom: 16px;
+  }
+
+  .chat-header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 16px 20px; display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .chat-name { font-weight: 600; font-size: 15px; }
+  .chat-status { font-size: 11px; color: var(--accent3); }
+
+  .chat-messages { padding: 20px; min-height: 280px; max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+
+  .chat-msg { max-width: 80%; animation: fadeIn .3s; }
+  .chat-msg.bot { align-self: flex-start; }
+  .chat-msg.user { align-self: flex-end; }
+
+  .msg-bubble {
+    padding: 10px 16px; border-radius: 16px; font-size: 14px; line-height: 1.5;
+  }
+  .chat-msg.bot .msg-bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .chat-msg.user .msg-bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+
+  .msg-correction {
+    font-size: 11px; color: var(--accent3); margin-top: 4px; padding: 0 4px;
+  }
+
+  .chat-options { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--border); }
+  .chat-option {
+    padding: 8px 14px; background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.3);
+    border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; color: var(--text); transition: all .2s;
+  }
+  .chat-option:hover { background: rgba(108,99,255,.25); border-color: var(--accent); }
+
+  .chat-input-row { display: flex; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--border); }
+  .chat-input {
+    flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 10px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+    outline: none;
+  }
+  .chat-input:focus { border-color: var(--accent); }
+  .chat-input::placeholder { color: var(--muted); }
+
+  .scenario-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; margin-bottom: 24px; }
+  .scenario-btn {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px 16px; text-align: center; cursor: pointer; transition: all .2s;
+  }
+  .scenario-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .scenario-btn.active { border-color: var(--accent); background: rgba(108,99,255,.1); }
+  .scenario-icon { font-size: 28px; margin-bottom: 8px; }
+  .scenario-name { font-size: 13px; font-weight: 500; }
+
+  /* ── PROGRESS ── */
+  .trophy-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .trophy {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 20px; text-align: center; flex: 1; min-width: 100px;
+    transition: all .2s;
+  }
+  .trophy.earned { border-color: var(--accent4); background: rgba(247,151,30,.08); }
+  .trophy-icon { font-size: 28px; margin-bottom: 4px; }
+  .trophy-name { font-size: 11px; color: var(--muted); }
+
+  .week-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
+  .day-block {
+    aspect-ratio: 1; background: var(--surface2); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--muted);
+    cursor: default;
+  }
+  .day-block.done { background: rgba(108,99,255,.3); color: var(--accent); }
+  .day-block.today { background: var(--accent); color: #fff; font-weight: 700; }
+
+  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .skill-row { margin-bottom: 12px; }
+  .skill-name { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .skill-name span:last-child { color: var(--muted); }
+  .skill-bar { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .skill-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+
+  /* ── TOAST ── */
+  .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 12px 20px; font-size: 13px;
+    animation: slideIn .3s ease;
+    max-width: 300px;
+  }
+  .toast.xp { border-left: 3px solid var(--accent); }
+  .toast.success { border-left: 3px solid var(--accent3); }
+  @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: none; } }
+
+  /* ══════════════════════════════════════════
+     MOBILE-FIRST RESPONSIVE — complete overhaul
+  ══════════════════════════════════════════ */
+  @media (max-width: 700px) {
+
+    /* ── Core layout: stack vertically ── */
+    .app {
+      flex-direction: column;
+      height: 100dvh;          /* dynamic viewport height */
+      overflow: hidden;
+    }
+
+    /* ── Sidebar becomes a bottom tab bar ── */
+    .sidebar {
+      width: 100%;
+      height: 64px;
+      min-height: 64px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0;
+      border-right: none;
+      border-top: 1px solid var(--border);
+      order: 2;                /* push to bottom */
+    }
+
+    /* Hide logo + XP bar on mobile (in sidebar) */
+    .logo, .sidebar-bottom { display: none; }
+
+    /* Nav items become compact icon tabs */
+    .nav-item {
+      flex-direction: column;
+      gap: 2px;
+      padding: 8px 4px;
+      border-left: none;
+      border-top: 3px solid transparent;
+      border-bottom: none;
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      font-size: 10px;
+    }
+    .nav-item.active {
+      border-left: none;
+      border-top-color: var(--accent);
+      background: rgba(108,99,255,.1);
+    }
+    .nav-icon { font-size: 20px; width: auto; }
+    /* Show short labels on mobile */
+    .nav-item span:not(.nav-icon) {
+      display: block !important;
+      font-size: 9px;
+      color: inherit;
+    }
+
+    /* ── Main area scrolls above tab bar ── */
+    .main {
+      flex: 1;
+      order: 1;
+      padding: 16px 14px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      height: 0;              /* flex child needs this to scroll */
+    }
+
+    /* ── Page header ── */
+    .page-header h2 { font-size: 20px; }
+    .page-header { margin-bottom: 16px; }
+
+    /* ── Home grid: 2 cols ── */
+    .home-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .stat-card { padding: 14px; }
+    .stat-value { font-size: 24px; }
+    .stat-icon { font-size: 20px; top: 10px; right: 10px; }
+
+    /* ── Daily mission ── */
+    .daily-mission { padding: 16px; margin-bottom: 16px; }
+    .mission-items { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mission-item { padding: 10px 12px; }
+    .mi-text { font-size: 11px; }
+
+    /* ── Cards ── */
+    .card { padding: 16px; }
+
+    /* ── Home streak/tip: stack ── */
+    #page-home > div:last-child {
+      grid-template-columns: 1fr !important;
+    }
+    .streak-count { font-size: 36px; }
+
+    /* ── Speaking ── */
+    .phrase-card { padding: 20px 16px; }
+    .phrase-en { font-size: 18px; }
+    .speaking-controls { gap: 8px; }
+    .record-btn { width: 52px; height: 52px; font-size: 20px; }
+
+    /* ── Sentence builder ── */
+    .words-pool, .sentence-slots { padding: 12px; min-height: 52px; }
+    .word-chip, .slot-chip { font-size: 13px; padding: 6px 12px; }
+
+    /* ── Flashcard ── */
+    .flashcard { padding: 32px 20px; min-height: 160px; }
+    .fc-word { font-size: 28px; }
+    .fc-translation { font-size: 20px; }
+    .vocab-actions { gap: 8px; }
+    .vocab-actions .btn { padding: 9px 14px; font-size: 13px; }
+
+    /* ── Word list: 2 cols ── */
+    .word-list { grid-template-columns: 1fr 1fr; }
+
+    /* ── Conversation ── */
+    .scenario-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+    .scenario-btn { padding: 12px 8px; }
+    .scenario-icon { font-size: 22px; margin-bottom: 4px; }
+    .scenario-name { font-size: 11px; }
+    .chat-messages { min-height: 200px; max-height: 260px; }
+    .chat-header { padding: 12px 14px; }
+    .chat-options { padding: 10px 14px; gap: 6px; }
+    .chat-option { font-size: 12px; padding: 7px 11px; }
+    .chat-input-row { padding: 10px 14px; gap: 8px; }
+    .chat-input { font-size: 14px; }
+
+    /* ── Progress ── */
+    .skills-grid { grid-template-columns: 1fr; }
+    .trophy-row { gap: 8px; }
+    .trophy { padding: 12px 10px; min-width: 70px; }
+    .trophy-icon { font-size: 22px; }
+    #page-progress > div:nth-child(2) {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* ── Vocab progress bar ── */
+    .vocab-progress-bar { padding: 12px 14px; }
+    .vp-label { font-size: 11px; min-width: 50px; }
+
+    /* ── Category tabs ── */
+    .category-tabs { gap: 6px; }
+    .tab { padding: 5px 12px; font-size: 12px; }
+
+    /* ── Tip box ── */
+    .tip-box { font-size: 12px; padding: 10px 12px; }
+
+    /* ── Toast: full width on mobile ── */
+    .toast-container { top: 8px; right: 8px; left: 8px; }
+    .toast { max-width: 100%; }
+
+    /* ── Welcome modal: full screen on mobile ── */
+    .welcome-modal {
+      width: 100vw;
+      min-height: 100dvh;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .wm-hero { padding: 28px 20px 20px; }
+    .wm-hero-emoji { font-size: 48px; margin-bottom: 10px; }
+    .wm-hero h2 { font-size: 22px; }
+    .wm-step { padding: 20px 20px 8px; }
+    .wm-goal-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .wm-feature-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .wm-footer { padding: 16px 20px 24px; }
+    .wm-dots { padding: 14px 20px 0; }
+
+    /* ── Phrase nav ── */
+    .phrase-nav { gap: 8px; }
+    .phrase-nav .btn { padding: 8px 14px; font-size: 13px; }
+  }
+
+  /* Small phones (< 380px) */
+  @media (max-width: 380px) {
+    .home-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mission-items { grid-template-columns: 1fr; }
+    .scenario-grid { grid-template-columns: repeat(2, 1fr); }
+    .word-list { grid-template-columns: 1fr; }
+    .vocab-actions { flex-wrap: wrap; justify-content: center; }
+    .wm-goal-grid, .wm-feature-row { grid-template-columns: 1fr; }
+    .phrase-en { font-size: 16px; }
+  }
+
+  /* ── MOBILE TOP BAR ── */
+  .mobile-topbar {
+    display: none;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    align-items: center;
+    gap: 12px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .mobile-topbar .logo-text {
+    font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .mobile-topbar .xp-area { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .mobile-topbar .xp-track { width: 80px; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .mobile-topbar .xp-fill-m { height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent2)); border-radius: 99px; transition: width .6s; }
+  .mobile-topbar .level-m { font-size: 11px; color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 700; }
+  .mobile-topbar .streak-m { font-size: 13px; }
+
+  @media (max-width: 700px) {
+    .mobile-topbar { display: flex; }
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  /* ── WELCOME OVERLAY ── */
+  .welcome-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(5, 5, 10, 0.92);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn .4s ease;
+  }
+  .welcome-overlay.hiding {
+    animation: fadeOut .4s ease forwards;
+  }
+  @keyframes fadeOut { to { opacity: 0; pointer-events: none; } }
+
+  .welcome-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    width: min(560px, calc(100vw - 32px));
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(108,99,255,.15);
+    position: relative;
+  }
+
+  /* hero gradient banner */
+  .wm-hero {
+    background: linear-gradient(135deg, #1a1630 0%, #12121a 50%, #1a1226 100%);
+    padding: 40px 40px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .wm-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 0%, rgba(108,99,255,.25) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 80% 100%, rgba(255,101,132,.15) 0%, transparent 60%);
+  }
+  .wm-hero-emoji {
+    font-size: 64px; position: relative; z-index: 1;
+    animation: float 3s ease-in-out infinite;
+    display: block; margin-bottom: 16px;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .wm-hero h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 800;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    position: relative; z-index: 1; margin-bottom: 8px;
+  }
+  .wm-hero p {
+    color: var(--muted); font-size: 14px; position: relative; z-index: 1;
+  }
+
+  /* step dots */
+  .wm-dots {
+    display: flex; gap: 6px; justify-content: center;
+    padding: 20px 40px 0;
+  }
+  .wm-dot {
+    height: 4px; border-radius: 99px;
+    background: var(--border); transition: all .3s;
+  }
+  .wm-dot.active { background: var(--accent); width: 24px !important; }
+  .wm-dot.done { background: rgba(108,99,255,.4); }
+
+  /* step content */
+  .wm-steps { position: relative; overflow: hidden; }
+  .wm-step {
+    padding: 28px 40px 8px;
+    display: none;
+    animation: stepIn .3s ease;
+  }
+  .wm-step.active { display: block; }
+  @keyframes stepIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: none; } }
+
+  .wm-step-icon { font-size: 36px; margin-bottom: 12px; }
+  .wm-step h3 {
+    font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .wm-step p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+
+  .wm-feature-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px;
+  }
+  .wm-feature {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 14px;
+    font-size: 13px; display: flex; align-items: center; gap: 10px;
+  }
+  .wm-feature .wf-icon { font-size: 20px; }
+
+  .wm-name-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 16px;
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px;
+    outline: none; margin-top: 12px; transition: border-color .2s;
+  }
+  .wm-name-input:focus { border-color: var(--accent); }
+  .wm-name-input::placeholder { color: var(--muted); }
+
+  .wm-goal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .wm-goal {
+    padding: 10px 14px; border-radius: var(--radius-sm);
+    background: var(--surface2); border: 1px solid var(--border);
+    cursor: pointer; font-size: 13px; transition: all .2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .wm-goal:hover { border-color: var(--accent); }
+  .wm-goal.selected { background: rgba(108,99,255,.15); border-color: var(--accent); color: var(--accent); }
+
+  .wm-commitment {
+    display: flex; flex-direction: column; gap: 8px; margin-top: 12px;
+  }
+  .wm-time-btn {
+    padding: 12px 16px; border-radius: var(--radius-sm);
+    background: var(--surface2); border: 1px solid var(--border);
+    cursor: pointer; font-size: 14px; transition: all .2s;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .wm-time-btn:hover { border-color: var(--accent); }
+  .wm-time-btn.selected { background: rgba(108,99,255,.15); border-color: var(--accent); color: var(--accent); }
+  .wm-time-xp { font-size: 11px; color: var(--accent3); }
+
+  /* footer */
+  .wm-footer {
+    padding: 20px 40px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .wm-skip { font-size: 13px; color: var(--muted); cursor: pointer; }
+  .wm-skip:hover { color: var(--text); }
+  .wm-next {
+    padding: 12px 28px; background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius-sm); cursor: pointer;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    transition: all .2s;
+  }
+  .wm-next:hover { background: #7c73ff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,99,255,.35); }
+  .wm-next.finish {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    padding: 12px 36px; font-size: 15px;
+  }
+
+  /* confetti */
+  .confetti-piece {
+    position: fixed; width: 8px; height: 8px; border-radius: 2px;
+    animation: confettiFall linear forwards;
+    z-index: 10001; pointer-events: none;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .tip-box {
+    background: rgba(67,233,123,.06); border: 1px solid rgba(67,233,123,.2);
+    border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .tip-box strong { color: var(--accent3); }
+
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
+  .empty-state .es-icon { font-size: 48px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ══ WELCOME TOUR OVERLAY ══ -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-modal">
+
+    <!-- Hero (always visible) -->
+    <div class="wm-hero">
+      <span class="wm-hero-emoji" id="heroEmoji">🚀</span>
+      <h2 id="heroTitle">Bienvenido a FluentFlow</h2>
+      <p id="heroSubtitle">Tu plataforma personal para hablar inglés fluido</p>
+    </div>
+
+    <!-- Dots -->
+    <div class="wm-dots" id="wmDots"></div>
+
+    <!-- Steps -->
+    <div class="wm-steps">
+
+      <!-- Step 1: Welcome -->
+      <div class="wm-step active" id="step-0">
+        <div class="wm-step-icon">👋</div>
+        <h3>¡Hola! Vamos a conocernos</h3>
+        <p>Antes de empezar, cuéntame un poco sobre ti para personalizar tu experiencia de aprendizaje.</p>
+        <input type="text" class="wm-name-input" id="userName" placeholder="¿Cómo te llamas?" maxlength="30">
+      </div>
+
+      <!-- Step 2: Goal -->
+      <div class="wm-step" id="step-1">
+        <div class="wm-step-icon">🎯</div>
+        <h3>¿Cuál es tu meta principal?</h3>
+        <p>Selecciona el objetivo que más te motiva. Esto personalizará el contenido que verás.</p>
+        <div class="wm-goal-grid">
+          <div class="wm-goal" onclick="selectGoal(this,'trabajo')"><span>💼</span> Trabajo y negocios</div>
+          <div class="wm-goal" onclick="selectGoal(this,'viajes')"><span>✈️</span> Viajar con confianza</div>
+          <div class="wm-goal" onclick="selectGoal(this,'social')"><span>🗣️</span> Conversación social</div>
+          <div class="wm-goal" onclick="selectGoal(this,'general')"><span>🌍</span> Inglés general / Todo</div>
+        </div>
+      </div>
+
+      <!-- Step 3: Commitment -->
+      <div class="wm-step" id="step-2">
+        <div class="wm-step-icon">⏱️</div>
+        <h3>¿Cuánto tiempo puedes dedicar cada día?</h3>
+        <p>La constancia es más importante que la duración. Elige algo que puedas cumplir <em>todos los días</em>.</p>
+        <div class="wm-commitment">
+          <div class="wm-time-btn" onclick="selectTime(this,'10')">
+            <span>⚡ 10 minutos al día</span>
+            <span class="wm-time-xp">+30 XP / día</span>
+          </div>
+          <div class="wm-time-btn selected" onclick="selectTime(this,'20')">
+            <span>🔥 20 minutos al día <small style="color:var(--accent4)">(Recomendado)</small></span>
+            <span class="wm-time-xp">+60 XP / día</span>
+          </div>
+          <div class="wm-time-btn" onclick="selectTime(this,'30')">
+            <span>🚀 30+ minutos al día</span>
+            <span class="wm-time-xp">+100 XP / día</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Features tour -->
+      <div class="wm-step" id="step-3">
+        <div class="wm-step-icon">🗺️</div>
+        <h3>Tu plataforma completa</h3>
+        <p>5 módulos diseñados con metodología científica de adquisición de idiomas:</p>
+        <div class="wm-feature-row">
+          <div class="wm-feature"><span class="wf-icon">🎤</span><div><strong>Speaking</strong><br><span style="color:var(--muted);font-size:11px">Frases reales en voz alta</span></div></div>
+          <div class="wm-feature"><span class="wf-icon">🔤</span><div><strong>Oraciones</strong><br><span style="color:var(--muted);font-size:11px">Estructura natural</span></div></div>
+          <div class="wm-feature"><span class="wf-icon">📚</span><div><strong>Vocabulario</strong><br><span style="color:var(--muted);font-size:11px">Repetición espaciada</span></div></div>
+          <div class="wm-feature"><span class="wf-icon">💬</span><div><strong>Conversación</strong><br><span style="color:var(--muted);font-size:11px">Situaciones reales</span></div></div>
+        </div>
+      </div>
+
+      <!-- Step 5: Ready -->
+      <div class="wm-step" id="step-4">
+        <div class="wm-step-icon">🏆</div>
+        <h3 id="readyTitle">¡Todo listo!</h3>
+        <p id="readyText">Tu aventura hacia el inglés fluido empieza ahora. Recuerda: <strong style="color:var(--accent)">20 minutos al día</strong> durante 90 días transformarán tu inglés completamente.</p>
+        <div style="background:rgba(108,99,255,.08);border:1px solid rgba(108,99,255,.2);border-radius:var(--radius-sm);padding:14px 16px;margin-top:16px;font-size:13px;color:var(--muted);line-height:1.7">
+          💡 <strong style="color:var(--text)">Tu primera misión:</strong> completa los 4 módulos de hoy. Solo toma 20 minutos y ganarás tu primera racha 🔥
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="wm-footer">
+      <span class="wm-skip" id="wmSkip" onclick="skipTour()">Saltar tour</span>
+      <button class="wm-next" id="wmNext" onclick="nextWelcomeStep()">Comenzar →</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="app">
+  <!-- MOBILE TOP BAR -->
+  <div class="mobile-topbar" id="mobileTopbar">
+    <span class="logo-text">FluentFlow</span>
+    <div class="xp-area">
+      <span class="streak-m" id="mStreak">🔥 0</span>
+      <span class="level-m" id="mLevel">A2</span>
+      <div class="xp-track"><div class="xp-fill-m" id="mXpFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>FluentFlow</h1>
+      <p>English Learning System</p>
+    </div>
+
+    <nav>
+      <div class="nav-item active" data-page="home">
+        <span class="nav-icon">🏠</span>
+        <span>Inicio</span>
+      </div>
+      <div class="nav-item" data-page="speaking">
+        <span class="nav-icon">🎤</span>
+        <span>Speaking</span>
+      </div>
+      <div class="nav-item" data-page="sentences">
+        <span class="nav-icon">🔤</span>
+        <span>Oraciones</span>
+      </div>
+      <div class="nav-item" data-page="vocab">
+        <span class="nav-icon">📚</span>
+        <span>Vocabulario</span>
+      </div>
+      <div class="nav-item" data-page="conversation">
+        <span class="nav-icon">💬</span>
+        <span>Conversación</span>
+      </div>
+      <div class="nav-item" data-page="progress">
+        <span class="nav-icon">📊</span>
+        <span>Progreso</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="level-badge">
+        <span>⚡</span>
+        <span id="levelLabel">Nivel A2</span>
+      </div>
+      <div class="xp-bar-label">
+        <span>XP</span>
+        <span id="xpLabel">0 / 500</span>
+      </div>
+      <div class="xp-track">
+        <div class="xp-fill" id="xpFill" style="width:0%"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ══ HOME ══ -->
+    <div class="page active" id="page-home">
+      <div class="page-header">
+        <h2>¡Buenos días! 👋</h2>
+        <p>Tu sesión de hoy — 20 minutos para mejorar tu inglés</p>
+      </div>
+
+      <div class="home-grid">
+        <div class="stat-card s1">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-value" id="streakStat">0</div>
+          <div class="stat-label">Días seguidos</div>
+        </div>
+        <div class="stat-card s2">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-value" id="xpStat">0</div>
+          <div class="stat-label">XP Total</div>
+        </div>
+        <div class="stat-card s3">
+          <div class="stat-icon">📖</div>
+          <div class="stat-value" id="wordsStat">0</div>
+          <div class="stat-label">Palabras aprendidas</div>
+        </div>
+        <div class="stat-card s4">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="sessionsStat">0</div>
+          <div class="stat-label">Lecciones completadas</div>
+        </div>
+      </div>
+
+      <div class="daily-mission">
+        <div class="mission-header">
+          <h3>🎯 Misión de Hoy</h3>
+          <span class="badge badge-orange">20 min</span>
+        </div>
+        <div class="mission-items">
+          <div class="mission-item" onclick="navigateTo('speaking'); markMission(this)" data-mission="speaking">
+            <span class="mi-icon">🎤</span>
+            <div class="mi-text">5 frases en voz alta</div>
+            <span class="mi-check">○</span>
+          </div>
+          <div class="mission-item" onclick="navigateTo('sentences'); markMission(this)" data-mission="sentences">
+            <span class="mi-icon">🔤</span>
+            <div class="mi-text">3 oraciones ordenadas</div>
+            <span class="mi-check">○</span>
+          </div>
+          <div class="mission-item" onclick="navigateTo('vocab'); markMission(this)" data-mission="vocab">
+            <span class="mi-icon">📚</span>
+            <div class="mi-text">10 flashcards</div>
+            <span class="mi-check">○</span>
+          </div>
+          <div class="mission-item" onclick="navigateTo('conversation'); markMission(this)" data-mission="conversation">
+            <span class="mi-icon">💬</span>
+            <div class="mi-text">1 conversación simulada</div>
+            <span class="mi-check">○</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-title">🔥 Racha actual</div>
+          <div class="streak-fire">🔥</div>
+          <div class="streak-count" id="streakHome">0</div>
+          <div class="streak-label">días consecutivos</div>
+          <div class="divider"></div>
+          <p style="font-size:13px;color:var(--muted);text-align:center">¡Completa la misión de hoy para mantener tu racha!</p>
+        </div>
+        <div class="card">
+          <div class="card-title">💡 Tip del día</div>
+          <div id="tipOfDay" style="font-size:14px;line-height:1.7;color:var(--muted)"></div>
+          <div class="divider"></div>
+          <div style="font-size:11px;color:var(--muted)" id="tipSource"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SPEAKING TRAINER ══ -->
+    <div class="page" id="page-speaking">
+      <div class="page-header">
+        <h2>🎤 Speaking Trainer</h2>
+        <p>Escucha → Repite → Domina. El secreto está en la repetición activa.</p>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 Método:</strong> Escucha la frase, repítela en voz alta 3 veces. Tu cerebro crea conexiones neurales con la práctica oral activa.
+      </div>
+
+      <div class="category-tabs" id="speakingTabs"></div>
+
+      <div class="phrase-card" id="phraseCard">
+        <div class="badge badge-purple" id="phraseCategory" style="margin-bottom:16px"></div>
+        <div class="phrase-en" id="phraseEn"></div>
+        <div class="phrase-phonetic" id="phrasePhonetic"></div>
+        <div class="phrase-es" id="phraseEs"></div>
+
+        <div class="speaking-controls">
+          <button class="btn btn-ghost" onclick="speakPhrase()">🔊 Escuchar</button>
+          <button class="record-btn" id="recordBtn" onclick="toggleRecord()" title="Grabar tu voz">🎤</button>
+          <button class="btn btn-ghost" onclick="markPhraseKnown()">✓ Lo domino</button>
+        </div>
+
+        <div class="feedback-box" id="feedbackBox"></div>
+      </div>
+
+      <div class="phrase-nav">
+        <button class="btn btn-ghost" onclick="prevPhrase()">← Anterior</button>
+        <span id="phraseCounter" style="font-size:13px;color:var(--muted);align-self:center"></span>
+        <button class="btn btn-primary" onclick="nextPhrase()">Siguiente →</button>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="card-title">📝 Errores comunes de hispanohablantes</div>
+        <div id="spanishTip" style="font-size:14px;line-height:1.7;color:var(--muted)"></div>
+      </div>
+    </div>
+
+    <!-- ══ SENTENCES ══ -->
+    <div class="page" id="page-sentences">
+      <div class="page-header">
+        <h2>🔤 Constructor de Oraciones</h2>
+        <p>Ordena las palabras para formar oraciones correctas. Aprende la estructura natural del inglés.</p>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 Estructura:</strong> El inglés siempre sigue <strong>Sujeto → Verbo → Objeto</strong>. A diferencia del español, el orden es más rígido.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Nivel: <span id="sentenceLevel" class="badge badge-purple" style="font-size:12px;margin-left:4px"></span></div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Traduce: "<span id="sentenceSpanish" style="color:var(--text);font-style:italic"></span>"</div>
+
+        <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Palabras disponibles (haz clic para agregar):</p>
+        <div class="words-pool" id="wordsPool"></div>
+
+        <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Tu oración (haz clic para quitar):</p>
+        <div class="sentence-slots" id="sentenceSlots"></div>
+
+        <div class="sentence-result" id="sentenceResult"></div>
+        <div class="grammar-tip" id="grammarTip"></div>
+
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" onclick="checkSentence()">Verificar ✓</button>
+          <button class="btn btn-ghost" onclick="clearSentence()">Limpiar</button>
+          <button class="btn btn-ghost" onclick="nextSentence()">Siguiente →</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 Estadísticas de hoy</div>
+        <div style="display:flex;gap:24px">
+          <div style="text-align:center">
+            <div class="stat-value" id="sentenceCorrect" style="font-size:28px">0</div>
+            <div class="stat-label">Correctas</div>
+          </div>
+          <div style="text-align:center">
+            <div class="stat-value" id="sentenceWrong" style="font-size:28px;color:var(--accent2)">0</div>
+            <div class="stat-label">Incorrectas</div>
+          </div>
+          <div style="text-align:center">
+            <div class="stat-value" id="sentenceStreak" style="font-size:28px;color:var(--accent4)">0</div>
+            <div class="stat-label">Racha actual</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ VOCABULARY ══ -->
+    <div class="page" id="page-vocab">
+      <div class="page-header">
+        <h2>📚 Vocabulario Inteligente</h2>
+        <p>10-15 palabras diarias con repetición espaciada. Así tu cerebro las retiene a largo plazo.</p>
+      </div>
+
+      <div class="vocab-progress-bar">
+        <span class="vp-label">Hoy</span>
+        <div class="vp-track"><div class="vp-fill" id="vocabTodayFill" style="width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
+        <span class="vp-count" id="vocabTodayCount">0/10</span>
+      </div>
+      <div class="vocab-progress-bar">
+        <span class="vp-label">Total</span>
+        <div class="vp-track"><div class="vp-fill" id="vocabTotalFill" style="width:0%;background:linear-gradient(90deg,var(--accent3),#38f9d7)"></div></div>
+        <span class="vp-count" id="vocabTotalCount">0</span>
+      </div>
+
+      <div class="flashcard-container">
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-front">
+            <div class="fc-word" id="fcWord"></div>
+            <div class="fc-phonetic" id="fcPhonetic"></div>
+            <div class="fc-hint">👆 Haz clic para ver la traducción</div>
+            <button class="btn btn-ghost" style="margin-top:16px;font-size:12px" onclick="event.stopPropagation();speakWord()">🔊 Pronunciar</button>
+          </div>
+          <div class="flashcard-back">
+            <div class="fc-translation" id="fcTranslation"></div>
+            <div class="fc-example" id="fcExample"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vocab-actions">
+        <button class="btn btn-danger" onclick="rateWord(1)">😕 Difícil</button>
+        <button class="btn btn-warn" onclick="rateWord(2)">🤔 Regular</button>
+        <button class="btn btn-success" onclick="rateWord(3)">😊 Fácil</button>
+      </div>
+
+      <div class="divider"></div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:16px;margin-bottom:12px">Palabras de hoy</h3>
+      <div class="word-list" id="wordList"></div>
+    </div>
+
+    <!-- ══ CONVERSATION ══ -->
+    <div class="page" id="page-conversation">
+      <div class="page-header">
+        <h2>💬 Simulador de Conversaciones</h2>
+        <p>Practica situaciones reales. El inglés se aprende hablando, no estudiando gramática.</p>
+      </div>
+
+      <div class="scenario-grid" id="scenarioGrid"></div>
+
+      <div class="card" id="chatSection" style="padding:0;overflow:hidden">
+        <div class="chat-header">
+          <div class="chat-avatar" id="chatAvatar">✈️</div>
+          <div>
+            <div class="chat-name" id="chatName">Elige un escenario</div>
+            <div class="chat-status">● En línea</div>
+          </div>
+          <button class="btn btn-ghost" style="margin-left:auto;font-size:12px" onclick="resetConversation()">↺ Reiniciar</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="empty-state">
+            <div class="es-icon">💬</div>
+            <p>Selecciona un escenario arriba para comenzar la conversación</p>
+          </div>
+        </div>
+        <div id="chatOptions" class="chat-options"></div>
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu respuesta en inglés..." onkeydown="if(event.key==='Enter')sendChatMessage()">
+          <button class="btn btn-primary" onclick="sendChatMessage()">Enviar →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PROGRESS ══ -->
+    <div class="page" id="page-progress">
+      <div class="page-header">
+        <h2>📊 Tu Progreso</h2>
+        <p>Cada día cuenta. Los pequeños avances crean fluencia real.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏆 Logros</div>
+        <div class="trophy-row" id="trophyRow"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="card">
+          <div class="card-title">📅 Esta semana</div>
+          <div class="week-grid" id="weekGrid"></div>
+          <div style="display:flex;gap:12px;margin-top:12px;font-size:12px;color:var(--muted)">
+            <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ XP esta semana</div>
+          <div class="stat-value" id="weekXP" style="font-size:40px;text-align:center;margin:12px 0"></div>
+          <div style="text-align:center;color:var(--muted);font-size:13px">puntos ganados</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💪 Habilidades</div>
+        <div class="skills-grid">
+          <div>
+            <div class="skill-row">
+              <div class="skill-name"><span>Speaking</span><span id="skillSpeaking">0%</span></div>
+              <div class="skill-bar"><div class="skill-fill" id="sfSpeaking" style="width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-name"><span>Vocabulario</span><span id="skillVocab">0%</span></div>
+              <div class="skill-bar"><div class="skill-fill" id="sfVocab" style="width:0%;background:linear-gradient(90deg,var(--accent3),#38f9d7)"></div></div>
+            </div>
+          </div>
+          <div>
+            <div class="skill-row">
+              <div class="skill-name"><span>Gramática</span><span id="skillGrammar">0%</span></div>
+              <div class="skill-bar"><div class="skill-fill" id="sfGrammar" style="width:0%;background:linear-gradient(90deg,var(--accent4),#f9d423)"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-name"><span>Comprensión</span><span id="skillListening">0%</span></div>
+              <div class="skill-bar"><div class="skill-fill" id="sfListening" style="width:0%;background:linear-gradient(90deg,var(--accent2),#f093fb)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗺️ Nivel de Fluidez Estimado</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="fluency-level" data-level="A1" style="padding:12px 20px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);font-size:13px;flex:1;text-align:center">A1<br><small style="color:var(--muted)">Básico</small></div>
+          <div class="fluency-level" data-level="A2" style="padding:12px 20px;border-radius:var(--radius-sm);background:rgba(108,99,255,.2);border:2px solid var(--accent);font-size:13px;flex:1;text-align:center;color:var(--accent);font-weight:700">A2 ⬅<br><small>Tú estás aquí</small></div>
+          <div class="fluency-level" data-level="B1" style="padding:12px 20px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);font-size:13px;flex:1;text-align:center">B1<br><small style="color:var(--muted)">Intermedio</small></div>
+          <div class="fluency-level" data-level="B2" style="padding:12px 20px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);font-size:13px;flex:1;text-align:center">B2<br><small style="color:var(--muted)">Avanzado</small></div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:12px">🎯 Necesitas 2000 XP para subir a B1. ¡Vas muy bien!</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════
+
+const PHRASES = {
+  "Cotidiano": [
+    { en: "What's up? How have you been?", es: "¿Qué tal? ¿Cómo has estado?", phonetic: "/wʌts ʌp haʊ həv juː biːn/", tip: "⚠️ No digas 'How are you?' todo el tiempo. Los nativos dicen 'What's up?' o 'How's it going?'" },
+    { en: "I'm running a bit late. Sorry about that.", es: "Voy un poco tarde. Lo siento.", phonetic: "/aɪm rʌnɪŋ ə bɪt leɪt/", tip: "⚠️ Error típico: 'I am late' (incorrecto en contexto de llegar tarde). Usa 'running late'." },
+    { en: "Could you say that again, please?", es: "¿Puedes repetirlo, por favor?", phonetic: "/kʊd juː seɪ ðæt əˈɡen pliːz/", tip: "⚠️ Muchos hispanohablantes dicen 'Repeat please' que suena rudo. Usa 'Could you say that again?'" },
+    { en: "I'm not sure I follow you.", es: "No estoy seguro de entenderte.", phonetic: "/aɪm nɒt ʃʊər aɪ ˈfɒloʊ juː/", tip: "💡 'Follow' aquí significa entender el hilo de la conversación." },
+    { en: "Let me think about it for a second.", es: "Déjame pensarlo un momento.", phonetic: "/let miː θɪŋk əˈbaʊt ɪt/", tip: "💡 Muy útil para ganar tiempo sin decir 'ummm'." },
+  ],
+  "Negocios": [
+    { en: "Let's get straight to the point.", es: "Vamos directo al grano.", phonetic: "/lets ɡet streɪt tə ðə pɔɪnt/", tip: "💡 Esta frase es muy profesional y directo en contextos de negocios." },
+    { en: "I'd like to follow up on our last meeting.", es: "Me gustaría hacer seguimiento de nuestra reunión.", phonetic: "/aɪd laɪk tə ˈfɒloʊ ʌp/", tip: "⚠️ 'Follow up' es esencial en negocios. Aprende este phrasal verb." },
+    { en: "Can we schedule a call for later this week?", es: "¿Podemos programar una llamada esta semana?", phonetic: "/kæn wiː ˈʃedjuːl ə kɔːl/", tip: "💡 'Schedule' se pronuncia /ˈʃedjuːl/ en inglés británico y /ˈskedjuːl/ en americano." },
+    { en: "I'll get back to you by end of day.", es: "Te respondo antes de que acabe el día.", phonetic: "/aɪl ɡet bæk tə juː/", tip: "💡 EOD = End of Day. Muy usado en emails y mensajes de negocios." },
+  ],
+  "Viajes": [
+    { en: "Where can I find the baggage claim?", es: "¿Dónde está la zona de recogida de maletas?", phonetic: "/weər kæn aɪ faɪnd ðə bæɡɪdʒ kleɪm/", tip: "💡 En aeropuerto: 'baggage claim' = recogida de equipaje. ¡Esencial!" },
+    { en: "I'd like a window seat, please.", es: "Quisiera un asiento de ventana.", phonetic: "/aɪd laɪk ə ˈwɪndoʊ siːt/", tip: "⚠️ Window seat vs. aisle seat /aɪl/ (pasillo). Aprende ambos." },
+    { en: "My flight got delayed. What are my options?", es: "Mi vuelo se retrasó. ¿Cuáles son mis opciones?", phonetic: "/maɪ flaɪt ɡɒt dɪˈleɪd/", tip: "💡 'Got delayed' es más natural que 'was delayed' en inglés hablado." },
+  ],
+  "Social": [
+    { en: "That's a great point, actually.", es: "Ese es un buen punto, la verdad.", phonetic: "/ðæts ə ɡreɪt pɔɪnt ˈæktʃuəli/", tip: "💡 'Actually' no significa 'actualmente' (eso es 'currently'). ¡Falso amigo!" },
+    { en: "I couldn't agree more.", es: "Estoy totalmente de acuerdo.", phonetic: "/aɪ ˈkʊdnt əˈɡriː mɔːr/", tip: "💡 Mucho más natural que 'I agree totally'. Los nativos hablan así." },
+    { en: "No worries at all!", es: "¡No te preocupes para nada!", phonetic: "/noʊ ˈwɜːriz æt ɔːl/", tip: "💡 'No worries' es muy común en Australia, UK y USA. Reemplaza 'You're welcome'." },
+  ],
+};
+
+const SENTENCES = [
+  { words: ["She", "every", "goes", "to", "morning", "the", "gym"], correct: ["She", "goes", "to", "the", "gym", "every", "morning"], es: "Ella va al gimnasio todas las mañanas.", grammar: "Presente simple: Sujeto + Verbo(+s) + Complemento. El adverbio de frecuencia va al final.", level: "A2" },
+  { words: ["do", "you", "speak", "Can", "English?"], correct: ["Can", "you", "speak", "English?"], es: "¿Puedes hablar inglés?", grammar: "Pregunta con modal: Can + Sujeto + Verbo infinitivo? Sin 'do' con modales.", level: "A1" },
+  { words: ["yesterday", "working", "was", "he", "all", "day"], correct: ["he", "was", "working", "all", "day", "yesterday"], es: "Él estuvo trabajando todo el día ayer.", grammar: "Pasado continuo: Sujeto + was/were + Verbo-ing. 'Yesterday' al final.", level: "A2" },
+  { words: ["never", "have", "I", "visited", "Europe"], correct: ["I", "have", "never", "visited", "Europe"], es: "Nunca he visitado Europa.", grammar: "Presente perfecto: Sujeto + have/has + participio. El adverbio 'never' va entre have y el participio.", level: "B1" },
+  { words: ["if", "she", "calls", "tell", "me", "you"], correct: ["if", "she", "calls", "you", "tell", "me"], es: "Si ella te llama, dímelo.", grammar: "Condicional real: If + presente simple, imperativo. Nota el orden: 'calls you' no 'you calls'.", level: "B1" },
+  { words: ["coffee", "I'd", "like", "some", "please"], correct: ["I'd", "like", "some", "coffee", "please"], es: "Me gustaría un poco de café, por favor.", grammar: "Petición educada: I'd like + artículo + sustantivo. Mucho más educado que 'I want'.", level: "A1" },
+  { words: ["longer", "here", "no", "she", "works"], correct: ["she", "no", "longer", "works", "here"], es: "Ella ya no trabaja aquí.", grammar: "'No longer' significa 'ya no'. Va entre sujeto y verbo. Diferente a 'anymore' que va al final.", level: "B1" },
+];
+
+const VOCABULARY = [
+  { word: "Actually", phonetic: "/ˈæktʃuəli/", translation: "En realidad / De hecho", example: "Actually, I disagree with that idea.", category: "Falso amigo", difficulty: 0 },
+  { word: "Eventually", phonetic: "/ɪˈventʃuəli/", translation: "Finalmente / Con el tiempo", example: "Eventually, she learned to speak English.", category: "Falso amigo", difficulty: 0 },
+  { word: "Embarrassed", phonetic: "/ɪmˈbærəst/", translation: "Avergonzado/a", example: "He was embarrassed when he forgot her name.", category: "Emociones", difficulty: 0 },
+  { word: "Overwhelmed", phonetic: "/ˌoʊvərˈwelmd/", translation: "Abrumado/a", example: "She felt overwhelmed by all the work.", category: "Emociones", difficulty: 0 },
+  { word: "Get along", phonetic: "/ɡet əˈlɒŋ/", translation: "Llevarse bien", example: "We get along really well.", category: "Phrasal Verbs", difficulty: 0 },
+  { word: "Figure out", phonetic: "/ˈfɪɡər aʊt/", translation: "Descubrir / Entender", example: "I can't figure out this problem.", category: "Phrasal Verbs", difficulty: 0 },
+  { word: "Look forward to", phonetic: "/lʊk ˈfɔːrwərd tuː/", translation: "Esperar con ansias", example: "I look forward to meeting you.", category: "Phrasal Verbs", difficulty: 0 },
+  { word: "Nevertheless", phonetic: "/ˌnevərðəˈles/", translation: "Sin embargo / No obstante", example: "It was raining; nevertheless, we went out.", category: "Conectores", difficulty: 0 },
+  { word: "Furthermore", phonetic: "/ˈfɜːrðərmɔːr/", translation: "Además / Es más", example: "Furthermore, this plan saves money.", category: "Conectores", difficulty: 0 },
+  { word: "Straightforward", phonetic: "/ˌstreɪtˈfɔːrwərd/", translation: "Directo / Sencillo", example: "The instructions were straightforward.", category: "Adjetivos útiles", difficulty: 0 },
+  { word: "Eager", phonetic: "/ˈiːɡər/", translation: "Ansioso / Con muchas ganas", example: "She's eager to learn English.", category: "Adjetivos útiles", difficulty: 0 },
+  { word: "Committed", phonetic: "/kəˈmɪtɪd/", translation: "Comprometido/a", example: "He's committed to his daily practice.", category: "Adjetivos útiles", difficulty: 0 },
+];
+
+const SCENARIOS = {
+  "✈️": { name: "Aeropuerto", color: "var(--accent)", steps: [
+    { bot: "Welcome to the check-in counter! Can I see your passport and ticket, please?", options: ["Here you go. I have a flight to New York.", "Yes, one moment please.", "I don't have my passport with me."] },
+    { bot: "Thank you! Would you prefer a window seat or an aisle seat?", options: ["Window seat, please.", "Aisle seat, I prefer more space.", "I don't mind, whatever is available."] },
+    { bot: "Do you have any bags to check in?", options: ["Yes, I have one suitcase.", "No, just this carry-on.", "Two bags. Is there a fee?"] },
+    { bot: "Your boarding gate is B12. Boarding starts at 3:45 PM. Have a great flight!", options: ["Thank you so much!", "What time is the flight exactly?", "How do I get to gate B12?"] },
+  ]},
+  "🛒": { name: "Tienda", color: "var(--accent3)", steps: [
+    { bot: "Hi there! Can I help you find something?", options: ["Yes, I'm looking for a blue jacket.", "No thanks, I'm just browsing.", "Do you have this in a larger size?"] },
+    { bot: "We have a few options. What's your budget?", options: ["I'm looking for something around $50.", "Price isn't a big concern.", "What's the cheapest option?"] },
+    { bot: "This one is $45 and it's on sale. Would you like to try it on?", options: ["Yes, where are the fitting rooms?", "Does it come in different colors?", "I'll take it without trying it on."] },
+    { bot: "Great choice! Cash or card?", options: ["Card, please.", "Cash. Do you have change for $100?", "Can I pay with my phone?"] },
+  ]},
+  "💼": { name: "Negocios", color: "var(--accent4)", steps: [
+    { bot: "Good morning! Thanks for coming in. Did you find the office okay?", options: ["Yes, no problem at all. Nice to meet you.", "It took me a while, but I made it!", "Your address on Google Maps was very helpful."] },
+    { bot: "Great. So, tell me a bit about your background and what brings you here today.", options: ["I have 5 years of experience in marketing and I'm looking to expand.", "I've been following your company for a while and I'm very interested.", "I'm currently working at XYZ company but looking for new challenges."] },
+    { bot: "That's impressive. What do you consider your biggest strength?", options: ["I'm very organized and detail-oriented.", "I work well under pressure and meet deadlines.", "My communication skills are my strongest asset."] },
+    { bot: "Excellent! We'll be in touch by end of the week. Do you have any questions for me?", options: ["What does a typical day in this role look like?", "What are the next steps in the process?", "Thank you, I look forward to hearing from you."] },
+  ]},
+  "🍽️": { name: "Restaurante", color: "var(--accent2)", steps: [
+    { bot: "Good evening! Do you have a reservation?", options: ["Yes, it's under the name Garcia.", "No, do you have a table for two?", "We're a party of four."] },
+    { bot: "Right this way! Can I start you off with some drinks?", options: ["Water for the table, please.", "I'll have a sparkling water.", "What do you have on tap?"] },
+    { bot: "Are you ready to order, or do you need a few more minutes?", options: ["I'll have the grilled salmon.", "What do you recommend?", "We need a few more minutes, thank you."] },
+    { bot: "Excellent choice! Any allergies or dietary restrictions I should know about?", options: ["No, I'm good, thanks.", "I'm vegetarian, is that dish vegetarian?", "I have a nut allergy."] },
+  ]},
+  "📱": { name: "Casual", color: "#9b59b6", steps: [
+    { bot: "Hey! Long time no see! How have you been?", options: ["I've been great! Super busy though.", "Not bad, you know, the usual.", "Pretty good! A lot has changed actually."] },
+    { bot: "Ha, same here! Hey, did you see the game last night?", options: ["Oh yeah, it was incredible!", "I missed it. Who won?", "I'm not really into sports, to be honest."] },
+    { bot: "You should've seen it! Anyway, any plans for the weekend?", options: ["I'm thinking of going hiking. You?", "Just relaxing at home, honestly.", "Actually, I have a birthday party to go to."] },
+    { bot: "That sounds fun! We should hang out soon. It's been too long!", options: ["Totally! Let's make plans.", "Definitely, I'll text you this week!", "Yes! How about next Saturday?"] },
+  ]},
+};
+
+const TIPS = [
+  { text: "No esperes a ser perfecto para hablar. Cada error es información valiosa. Los nativos prefieren a alguien que intenta sobre alguien que se calla.", source: "Principio del Input Comprensible — Stephen Krashen" },
+  { text: "Escucha podcasts en inglés aunque no entiendas todo. Tu cerebro aprende patrones auditivos incluso sin esfuerzo consciente. Se llama 'input masivo'.", source: "Teoría de Adquisición de Lenguas — Krashen (1982)" },
+  { text: "Aprende frases completas, no palabras sueltas. 'I'm looking forward to it' es más útil que memorizar 'forward' como vocabulario aislado.", source: "Enfoque Léxico — Michael Lewis (1993)" },
+  { text: "La repetición espaciada es científicamente la forma más eficiente de memorizar. Mejor 5 minutos cada día que 1 hora una vez a la semana.", source: "Efecto de Espaciado — Hermann Ebbinghaus (1885)" },
+  { text: "Habla solo en inglés mientras cocinas o caminas. Este 'self-talk' activa redes cerebrales que conectan pensamiento y lenguaje. ¡Piensa en inglés!", source: "Output Hypothesis — Merrill Swain (1985)" },
+];
+
+const TROPHIES = [
+  { icon: "🌟", name: "Primera lección", xpRequired: 0 },
+  { icon: "🔥", name: "3 días seguidos", streakRequired: 3 },
+  { icon: "💪", name: "50 XP", xpRequired: 50 },
+  { icon: "📚", name: "10 palabras", wordsRequired: 10 },
+  { icon: "🎤", name: "5 frases", phrasesRequired: 5 },
+  { icon: "⚡", name: "200 XP", xpRequired: 200 },
+  { icon: "🏆", name: "7 días seguidos", streakRequired: 7 },
+  { icon: "🚀", name: "500 XP", xpRequired: 500 },
+];
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+
+let state = JSON.parse(localStorage.getItem('fluentflow_state') || '{}');
+state = Object.assign({
+  xp: 0,
+  streak: 0,
+  sessions: 0,
+  wordsLearned: 0,
+  phrasesKnown: 0,
+  grammarCorrect: 0,
+  listeningActions: 0,
+  lastActivity: null,
+  weekActivity: {},
+  vocabRatings: {},
+  currentPhraseIndex: 0,
+  currentPhraseCategory: "Cotidiano",
+  vocabIndex: 0,
+  vocabReviewed: 0,
+  sentenceCorrect: 0,
+  sentenceWrong: 0,
+  sentenceStreak: 0,
+  currentSentenceIndex: 0,
+  weekXP: 0,
+  missionsDone: {},
+}, state);
+
+function saveState() {
+  localStorage.setItem('fluentflow_state', JSON.stringify(state));
+}
+
+function addXP(amount, label) {
+  state.xp += amount;
+  state.weekXP = (state.weekXP || 0) + amount;
+  saveState();
+  updateXPBar();
+  showToast(`+${amount} XP — ${label}`, 'xp');
+  updateStats();
+}
+
+function updateXPBar() {
+  const xpPerLevel = 500;
+  const currentXP = state.xp % xpPerLevel;
+  const level = Math.floor(state.xp / xpPerLevel);
+  const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+  const levelName = levels[Math.min(level, levels.length - 1)];
+  document.getElementById('xpFill').style.width = (currentXP / xpPerLevel * 100) + '%';
+  document.getElementById('xpLabel').textContent = `${currentXP} / ${xpPerLevel}`;
+  document.getElementById('levelLabel').textContent = `Nivel ${levelName}`;
+  // Mobile topbar sync
+  const mXp = document.getElementById('mXpFill');
+  const mLvl = document.getElementById('mLevel');
+  const mStr = document.getElementById('mStreak');
+  if(mXp) mXp.style.width = (currentXP / xpPerLevel * 100) + '%';
+  if(mLvl) mLvl.textContent = levelName;
+  if(mStr) mStr.textContent = `🔥 ${state.streak}`;
+}
+
+function updateStats() {
+  document.getElementById('streakStat').textContent = state.streak;
+  document.getElementById('streakHome').textContent = state.streak;
+  document.getElementById('xpStat').textContent = state.xp;
+  document.getElementById('wordsStat').textContent = state.wordsLearned;
+  document.getElementById('sessionsStat').textContent = state.sessions;
+  document.getElementById('weekXP').textContent = state.weekXP || 0;
+  
+  // Skills
+  const speaking = Math.min(100, Math.round(state.phrasesKnown * 3));
+  const vocab = Math.min(100, Math.round(state.wordsLearned * 2));
+  const grammar = Math.min(100, Math.round(state.grammarCorrect * 5));
+  const listening = Math.min(100, Math.round(state.listeningActions * 2));
+  
+  ['Speaking','Vocab','Grammar','Listening'].forEach(s => {
+    const val = {Speaking:speaking,Vocab:vocab,Grammar:grammar,Listening:listening}[s];
+    const el = document.getElementById('sf'+s);
+    const label = document.getElementById('skill'+s);
+    if(el) { el.style.width = val+'%'; }
+    if(label) label.textContent = val+'%';
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+function navigateTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  
+  if(page === 'speaking') renderSpeakingPage();
+  if(page === 'vocab') renderVocabPage();
+  if(page === 'sentences') renderSentencePage();
+  if(page === 'progress') renderProgressPage();
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => navigateTo(item.dataset.page));
+});
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+
+function showToast(message, type = 'xp') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = message;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  HOME
+// ═══════════════════════════════════════════════════════
+
+function initHome() {
+  const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
+  document.getElementById('tipOfDay').textContent = tip.text;
+  document.getElementById('tipSource').textContent = tip.source;
+  updateStats();
+  updateXPBar();
+  
+  // Restore mission checkmarks
+  Object.keys(state.missionsDone || {}).forEach(mission => {
+    const el = document.querySelector(`[data-mission="${mission}"]`);
+    if(el && state.missionsDone[mission]) {
+      el.classList.add('done');
+      el.querySelector('.mi-check').textContent = '✅';
+    }
+  });
+}
+
+function markMission(el) {
+  const mission = el.dataset.mission;
+  if(!state.missionsDone[mission]) {
+    state.missionsDone[mission] = true;
+    el.classList.add('done');
+    el.querySelector('.mi-check').textContent = '✅';
+    saveState();
+    
+    const allDone = Object.keys(state.missionsDone).length >= 4;
+    if(allDone) {
+      setTimeout(() => showToast('🎉 ¡Misión diaria completa! Racha +1 🔥', 'success'), 300);
+      state.streak++;
+      state.sessions++;
+      const today = new Date().toDateString();
+      state.weekActivity[today] = true;
+      saveState();
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  SPEAKING
+// ═══════════════════════════════════════════════════════
+
+function renderSpeakingPage() {
+  // Tabs
+  const tabsEl = document.getElementById('speakingTabs');
+  tabsEl.innerHTML = '';
+  Object.keys(PHRASES).forEach(cat => {
+    const tab = document.createElement('div');
+    tab.className = 'tab' + (cat === state.currentPhraseCategory ? ' active' : '');
+    tab.textContent = cat;
+    tab.onclick = () => {
+      state.currentPhraseCategory = cat;
+      state.currentPhraseIndex = 0;
+      renderSpeakingPage();
+    };
+    tabsEl.appendChild(tab);
+  });
+  updatePhraseCard();
+}
+
+function updatePhraseCard() {
+  const phrases = PHRASES[state.currentPhraseCategory];
+  const phrase = phrases[state.currentPhraseIndex];
+  document.getElementById('phraseCategory').textContent = state.currentPhraseCategory;
+  document.getElementById('phraseEn').textContent = phrase.en;
+  document.getElementById('phrasePhonetic').textContent = phrase.phonetic;
+  document.getElementById('phraseEs').textContent = phrase.es;
+  document.getElementById('phraseCounter').textContent = `${state.currentPhraseIndex + 1} / ${phrases.length}`;
+  document.getElementById('spanishTip').textContent = phrase.tip;
+  document.getElementById('feedbackBox').classList.remove('show');
+}
+
+function prevPhrase() {
+  const phrases = PHRASES[state.currentPhraseCategory];
+  state.currentPhraseIndex = (state.currentPhraseIndex - 1 + phrases.length) % phrases.length;
+  updatePhraseCard();
+}
+
+function nextPhrase() {
+  const phrases = PHRASES[state.currentPhraseCategory];
+  state.currentPhraseIndex = (state.currentPhraseIndex + 1) % phrases.length;
+  updatePhraseCard();
+  state.listeningActions++;
+  saveState();
+}
+
+function speakPhrase() {
+  const phrase = PHRASES[state.currentPhraseCategory][state.currentPhraseIndex];
+  if('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(phrase.en);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.85;
+    speechSynthesis.speak(utterance);
+    state.listeningActions++;
+    addXP(2, 'Escuchaste pronunciación');
+  } else {
+    showToast('Tu navegador no soporta síntesis de voz', 'xp');
+  }
+}
+
+let isRecording = false;
+let recognition = null;
+
+function toggleRecord() {
+  if(!isRecording) startRecording();
+  else stopRecording();
+}
+
+function startRecording() {
+  const btn = document.getElementById('recordBtn');
+  if('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.onresult = (e) => {
+      const said = e.results[0][0].transcript.toLowerCase();
+      const target = PHRASES[state.currentPhraseCategory][state.currentPhraseIndex].en.toLowerCase();
+      evaluateSpeech(said, target);
+    };
+    recognition.onerror = () => {
+      showFeedback("No pude escuchar claramente. Intenta de nuevo.", 'retry');
+    };
+    recognition.onend = () => { isRecording = false; btn.classList.remove('recording'); btn.textContent = '🎤'; };
+    recognition.start();
+    isRecording = true;
+    btn.classList.add('recording');
+    btn.textContent = '⏹️';
+  } else {
+    // Simulated feedback
+    const feedback = ["¡Excelente pronunciación! Suenas como un nativo.", "Bien, pero intenta pronunciar más claramente la última palabra.", "Muy bien. Practica el ritmo un poco más."];
+    const types = ['good', 'ok', 'ok'];
+    const idx = Math.floor(Math.random() * 3);
+    showFeedback(feedback[idx], types[idx]);
+    addXP(5, 'Practicaste speaking');
+    state.phrasesKnown++;
+    saveState();
+  }
+}
+
+function stopRecording() {
+  if(recognition) recognition.stop();
+}
+
+function evaluateSpeech(said, target) {
+  const targetWords = target.replace(/[^a-z\s]/g, '').split(' ');
+  const saidWords = said.replace(/[^a-z\s]/g, '').split(' ');
+  const matches = targetWords.filter(w => saidWords.includes(w)).length;
+  const score = matches / targetWords.length;
+  
+  if(score > 0.7) {
+    showFeedback(`✅ ¡Muy bien! Reconocí: "${said}"`, 'good');
+    addXP(10, 'Speaking correcto');
+    state.phrasesKnown++;
+  } else if(score > 0.4) {
+    showFeedback(`🤔 Escuché: "${said}". Intenta de nuevo más claro.`, 'ok');
+    addXP(3, 'Speaking parcial');
+  } else {
+    showFeedback(`🔁 Escuché: "${said}". La frase correcta es: "${PHRASES[state.currentPhraseCategory][state.currentPhraseIndex].en}"`, 'retry');
+  }
+  saveState();
+}
+
+function showFeedback(text, type) {
+  const fb = document.getElementById('feedbackBox');
+  fb.textContent = text;
+  fb.className = `feedback-box show feedback-${type}`;
+}
+
+function markPhraseKnown() {
+  state.phrasesKnown++;
+  addXP(5, 'Frase dominada');
+  showFeedback('✅ ¡Marcada como dominada! Sigue practicando.', 'good');
+  saveState();
+  setTimeout(nextPhrase, 1000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  SENTENCES
+// ═══════════════════════════════════════════════════════
+
+let currentSentence = null;
+let currentSelected = [];
+
+function renderSentencePage() {
+  currentSentence = SENTENCES[state.currentSentenceIndex % SENTENCES.length];
+  currentSelected = [];
+  
+  document.getElementById('sentenceLevel').textContent = currentSentence.level;
+  document.getElementById('sentenceSpanish').textContent = currentSentence.es;
+  document.getElementById('sentenceCorrect').textContent = state.sentenceCorrect;
+  document.getElementById('sentenceWrong').textContent = state.sentenceWrong;
+  document.getElementById('sentenceStreak').textContent = state.sentenceStreak;
+  document.getElementById('sentenceResult').style.display = 'none';
+  document.getElementById('grammarTip').classList.remove('show');
+  
+  const pool = document.getElementById('wordsPool');
+  const slots = document.getElementById('sentenceSlots');
+  pool.innerHTML = '';
+  slots.innerHTML = '';
+  
+  // Shuffle words
+  const shuffled = [...currentSentence.words].sort(() => Math.random() - .5);
+  shuffled.forEach(word => {
+    const chip = document.createElement('div');
+    chip.className = 'word-chip';
+    chip.textContent = word;
+    chip.onclick = () => selectWord(chip, word);
+    pool.appendChild(chip);
+  });
+}
+
+function selectWord(chip, word) {
+  if(chip.classList.contains('used')) return;
+  chip.classList.add('used');
+  currentSelected.push(word);
+  
+  const slots = document.getElementById('sentenceSlots');
+  const slot = document.createElement('div');
+  slot.className = 'slot-chip';
+  slot.textContent = word;
+  slot.dataset.word = word;
+  slot.onclick = () => removeWord(slot, word, chip);
+  slots.appendChild(slot);
+}
+
+function removeWord(slot, word, originalChip) {
+  currentSelected.splice(currentSelected.lastIndexOf(word), 1);
+  slot.remove();
+  if(originalChip) originalChip.classList.remove('used');
+}
+
+function clearSentence() {
+  currentSelected = [];
+  document.getElementById('sentenceSlots').innerHTML = '';
+  document.querySelectorAll('.word-chip').forEach(c => c.classList.remove('used'));
+  document.getElementById('sentenceResult').style.display = 'none';
+  document.getElementById('grammarTip').classList.remove('show');
+}
+
+function checkSentence() {
+  if(currentSelected.length === 0) { showToast('Agrega palabras primero', 'xp'); return; }
+  
+  const correct = currentSentence.correct.join(' ').toLowerCase();
+  const user = currentSelected.join(' ').toLowerCase();
+  const resultEl = document.getElementById('sentenceResult');
+  const tipEl = document.getElementById('grammarTip');
+  
+  if(user === correct) {
+    resultEl.className = 'sentence-result correct';
+    resultEl.textContent = '✅ ¡Correcto! ' + currentSentence.correct.join(' ');
+    resultEl.style.display = 'block';
+    tipEl.innerHTML = `<strong>📌 Estructura:</strong> ${currentSentence.grammar}`;
+    tipEl.classList.add('show');
+    state.sentenceCorrect++;
+    state.sentenceStreak++;
+    state.grammarCorrect++;
+    addXP(15, 'Oración correcta');
+    saveState();
+    document.getElementById('sentenceStreak').textContent = state.sentenceStreak;
+    document.getElementById('sentenceCorrect').textContent = state.sentenceCorrect;
+    setTimeout(nextSentence, 2000);
+  } else {
+    resultEl.className = 'sentence-result wrong';
+    resultEl.textContent = `❌ Incorrecto. La respuesta es: "${currentSentence.correct.join(' ')}"`;
+    resultEl.style.display = 'block';
+    tipEl.innerHTML = `<strong>📌 Estructura:</strong> ${currentSentence.grammar}`;
+    tipEl.classList.add('show');
+    state.sentenceWrong++;
+    state.sentenceStreak = 0;
+    saveState();
+    document.getElementById('sentenceWrong').textContent = state.sentenceWrong;
+    document.getElementById('sentenceStreak').textContent = state.sentenceStreak;
+  }
+}
+
+function nextSentence() {
+  state.currentSentenceIndex = (state.currentSentenceIndex + 1) % SENTENCES.length;
+  saveState();
+  renderSentencePage();
+}
+
+// ═══════════════════════════════════════════════════════
+//  VOCABULARY
+// ═══════════════════════════════════════════════════════
+
+function renderVocabPage() {
+  updateVocabCard();
+  renderWordList();
+  updateVocabProgress();
+}
+
+function updateVocabCard() {
+  const word = VOCABULARY[state.vocabIndex % VOCABULARY.length];
+  document.getElementById('fcWord').textContent = word.word;
+  document.getElementById('fcPhonetic').textContent = word.phonetic;
+  document.getElementById('fcTranslation').textContent = word.translation;
+  document.getElementById('fcExample').textContent = '"' + word.example + '"';
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped');
+}
+
+function flipCard() {
+  document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+function speakWord() {
+  const word = VOCABULARY[state.vocabIndex % VOCABULARY.length];
+  if('speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(word.word);
+    u.lang = 'en-US'; u.rate = 0.85;
+    speechSynthesis.speak(u);
+  }
+}
+
+function rateWord(rating) {
+  const word = VOCABULARY[state.vocabIndex % VOCABULARY.length];
+  state.vocabRatings[word.word] = rating;
+  
+  if(rating >= 2) {
+    state.wordsLearned = Math.max(state.wordsLearned, Object.values(state.vocabRatings).filter(r => r >= 2).length);
+  }
+  
+  state.vocabIndex++;
+  state.vocabReviewed++;
+  
+  const labels = ['', '⚡ Marcada para repasar pronto', '👍 Buen progreso', '🚀 Dominada por ahora'];
+  addXP(rating * 3, labels[rating]);
+  saveState();
+  updateVocabCard();
+  renderWordList();
+  updateVocabProgress();
+}
+
+function updateVocabProgress() {
+  const reviewed = state.vocabReviewed % VOCABULARY.length;
+  const pct = (reviewed / 10) * 100;
+  document.getElementById('vocabTodayFill').style.width = Math.min(100, pct) + '%';
+  document.getElementById('vocabTodayCount').textContent = `${Math.min(reviewed, 10)}/10`;
+  document.getElementById('vocabTotalFill').style.width = Math.min(100, state.wordsLearned / VOCABULARY.length * 100) + '%';
+  document.getElementById('vocabTotalCount').textContent = state.wordsLearned + ' palabras';
+}
+
+function renderWordList() {
+  const list = document.getElementById('wordList');
+  list.innerHTML = '';
+  VOCABULARY.forEach(w => {
+    const rating = state.vocabRatings[w.word] || 0;
+    const div = document.createElement('div');
+    div.className = 'word-list-item';
+    div.innerHTML = `
+      <div class="wli-en">${w.word}</div>
+      <div class="wli-es">${w.translation}</div>
+      <div class="wli-status">
+        ${rating === 0 ? '<span class="badge badge-purple">Por revisar</span>' :
+          rating === 1 ? '<span class="badge badge-red">Difícil</span>' :
+          rating === 2 ? '<span class="badge badge-orange">Regular</span>' :
+          '<span class="badge badge-green">Dominada</span>'}
+      </div>`;
+    div.onclick = () => {
+      state.vocabIndex = VOCABULARY.indexOf(w);
+      updateVocabCard();
+    };
+    list.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  CONVERSATION
+// ═══════════════════════════════════════════════════════
+
+let currentScenario = null;
+let currentStep = 0;
+const corrections = {
+  "i want": "💡 Tip: 'I want' puede sonar rudo. Prueba 'I'd like' o 'Could I have'",
+  "is more better": "❌ Error: Usa solo 'is better', no 'is more better'",
+  "how i can": "❌ Error: El orden correcto es 'How can I', no 'how I can'",
+  "i am agree": "❌ Error: En inglés se dice 'I agree', sin 'am'",
+  "make a party": "❌ Error: Se dice 'have a party', no 'make a party'",
+};
+
+function initConversation() {
+  const grid = document.getElementById('scenarioGrid');
+  grid.innerHTML = '';
+  Object.entries(SCENARIOS).forEach(([icon, s]) => {
+    const btn = document.createElement('div');
+    btn.className = 'scenario-btn';
+    btn.innerHTML = `<div class="scenario-icon">${icon}</div><div class="scenario-name">${s.name}</div>`;
+    btn.onclick = () => startScenario(icon, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function startScenario(icon, btn) {
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  currentScenario = icon;
+  currentStep = 0;
+  
+  const scenario = SCENARIOS[icon];
+  document.getElementById('chatAvatar').textContent = icon;
+  document.getElementById('chatName').textContent = scenario.name;
+  
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML = '';
+  document.getElementById('chatOptions').innerHTML = '';
+  
+  showBotMessage(scenario.steps[0].bot);
+  showOptions(scenario.steps[0].options);
+}
+
+function showBotMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot';
+  div.innerHTML = `<div class="msg-bubble">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showUserMessage(text, correction = null) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg user';
+  div.innerHTML = `<div class="msg-bubble">${text}</div>`;
+  if(correction) div.innerHTML += `<div class="msg-correction">💡 ${correction}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showOptions(opts) {
+  const el = document.getElementById('chatOptions');
+  el.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('div');
+    btn.className = 'chat-option';
+    btn.textContent = opt;
+    btn.onclick = () => handleChatResponse(opt);
+    el.appendChild(btn);
+  });
+}
+
+function handleChatResponse(text) {
+  document.getElementById('chatOptions').innerHTML = '';
+  
+  let correction = null;
+  for(const [pattern, tip] of Object.entries(corrections)) {
+    if(text.toLowerCase().includes(pattern)) { correction = tip; break; }
+  }
+  
+  showUserMessage(text, correction);
+  
+  if(currentScenario && currentStep < SCENARIOS[currentScenario].steps.length - 1) {
+    currentStep++;
+    addXP(8, 'Respuesta en conversación');
+    setTimeout(() => {
+      const step = SCENARIOS[currentScenario].steps[currentStep];
+      showBotMessage(step.bot);
+      showOptions(step.options);
+    }, 800);
+  } else {
+    addXP(20, 'Conversación completada');
+    setTimeout(() => {
+      showBotMessage("Great talking with you! You did very well! 🎉");
+      document.getElementById('chatOptions').innerHTML = '';
+      state.sessions++;
+      saveState();
+      showToast('🎉 ¡Conversación completada! +20 XP', 'success');
+    }, 800);
+  }
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  
+  let correction = null;
+  for(const [pattern, tip] of Object.entries(corrections)) {
+    if(text.toLowerCase().includes(pattern)) { correction = tip; break; }
+  }
+  
+  showUserMessage(text, correction);
+  addXP(5, 'Mensaje enviado');
+  
+  // Simple adaptive bot response
+  const responses = [
+    "That's interesting! Could you tell me more about that?",
+    "I see! And what would you do in that situation?",
+    "Great point! How can I help you with that?",
+    "Understood! Is there anything else you'd like to know?",
+    "Perfect! You're doing great with your English!",
+  ];
+  
+  setTimeout(() => {
+    showBotMessage(responses[Math.floor(Math.random() * responses.length)]);
+  }, 800);
+}
+
+function resetConversation() {
+  currentScenario = null;
+  currentStep = 0;
+  document.getElementById('chatMessages').innerHTML = '<div class="empty-state"><div class="es-icon">💬</div><p>Selecciona un escenario arriba para comenzar la conversación</p></div>';
+  document.getElementById('chatOptions').innerHTML = '';
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROGRESS
+// ═══════════════════════════════════════════════════════
+
+function renderProgressPage() {
+  updateStats();
+  
+  // Week grid
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  const today = new Date();
+  const todayStr = today.toDateString();
+  
+  for(let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dStr = d.toDateString();
+    const block = document.createElement('div');
+    block.className = 'day-block' + (dStr === todayStr ? ' today' : (state.weekActivity[dStr] ? ' done' : ''));
+    block.textContent = d.getDate();
+    grid.appendChild(block);
+  }
+  
+  // Trophies
+  const row = document.getElementById('trophyRow');
+  row.innerHTML = '';
+  TROPHIES.forEach(t => {
+    const earned = 
+      (t.xpRequired !== undefined && state.xp >= t.xpRequired) ||
+      (t.streakRequired !== undefined && state.streak >= t.streakRequired) ||
+      (t.wordsRequired !== undefined && state.wordsLearned >= t.wordsRequired) ||
+      (t.phrasesRequired !== undefined && state.phrasesKnown >= t.phrasesRequired);
+    
+    const div = document.createElement('div');
+    div.className = 'trophy' + (earned ? ' earned' : '');
+    div.innerHTML = `<div class="trophy-icon">${earned ? t.icon : '🔒'}</div><div class="trophy-name">${t.name}</div>`;
+    row.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  WELCOME TOUR
+// ═══════════════════════════════════════════════════════
+
+const TOTAL_STEPS = 5;
+let currentWelcomeStep = 0;
+let selectedGoal = 'general';
+let selectedTime = '20';
+
+const heroData = [
+  { emoji: '🚀', title: 'Bienvenido a FluentFlow', sub: 'Tu plataforma personal para hablar inglés fluido' },
+  { emoji: '🎯', title: '¿Cuál es tu meta?', sub: 'Elige lo que más te motiva' },
+  { emoji: '⏱️', title: 'Tu compromiso diario', sub: 'Pequeños pasos crean grandes cambios' },
+  { emoji: '🗺️', title: '5 módulos poderosos', sub: 'Metodología científica de adquisición' },
+  { emoji: '✨', title: '¡Ya eres parte de FluentFlow!', sub: 'Empieza hoy, habla mañana' },
+];
+
+function buildWelcomeDots() {
+  const el = document.getElementById('wmDots');
+  el.innerHTML = '';
+  for(let i = 0; i < TOTAL_STEPS; i++) {
+    const d = document.createElement('div');
+    d.className = 'wm-dot' + (i === 0 ? ' active' : '');
+    d.style.width = (i === 0 ? '24px' : '8px');
+    el.appendChild(d);
+  }
+}
+
+function updateWelcomeDots(step) {
+  const dots = document.querySelectorAll('.wm-dot');
+  dots.forEach((d, i) => {
+    d.classList.remove('active', 'done');
+    d.style.width = '8px';
+    if(i < step) { d.classList.add('done'); }
+    if(i === step) { d.classList.add('active'); d.style.width = '24px'; }
+  });
+}
+
+function nextWelcomeStep() {
+  // Validate step 0 (name)
+  if(currentWelcomeStep === 0) {
+    const name = document.getElementById('userName').value.trim();
+    if(name) {
+      state.userName = name;
+      saveState();
+    }
+  }
+
+  currentWelcomeStep++;
+
+  if(currentWelcomeStep >= TOTAL_STEPS) {
+    finishTour();
+    return;
+  }
+
+  // Update hero
+  const h = heroData[currentWelcomeStep];
+  document.getElementById('heroEmoji').textContent = h.emoji;
+  document.getElementById('heroTitle').textContent = h.title;
+  document.getElementById('heroSubtitle').textContent = h.sub;
+
+  // Update steps
+  document.querySelectorAll('.wm-step').forEach((s, i) => {
+    s.classList.toggle('active', i === currentWelcomeStep);
+  });
+
+  // Update dots
+  updateWelcomeDots(currentWelcomeStep);
+
+  // Update ready screen with user name
+  if(currentWelcomeStep === TOTAL_STEPS - 1) {
+    const name = state.userName || 'Campeón';
+    document.getElementById('readyTitle').textContent = `¡Todo listo, ${name}! 🎉`;
+    document.getElementById('wmNext').textContent = '¡Empezar ahora! 🚀';
+    document.getElementById('wmNext').classList.add('finish');
+    document.getElementById('wmSkip').style.display = 'none';
+  } else {
+    document.getElementById('wmNext').textContent = 'Siguiente →';
+    document.getElementById('wmNext').classList.remove('finish');
+  }
+}
+
+function selectGoal(el, goal) {
+  document.querySelectorAll('.wm-goal').forEach(g => g.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedGoal = goal;
+  state.userGoal = goal;
+  saveState();
+}
+
+function selectTime(el, time) {
+  document.querySelectorAll('.wm-time-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTime = time;
+  state.dailyGoalMin = time;
+  saveState();
+}
+
+function skipTour() {
+  state.tourDone = true;
+  saveState();
+  const overlay = document.getElementById('welcomeOverlay');
+  overlay.classList.add('hiding');
+  setTimeout(() => overlay.remove(), 400);
+}
+
+function finishTour() {
+  state.tourDone = true;
+  saveState();
+  launchConfetti();
+  setTimeout(() => {
+    const overlay = document.getElementById('welcomeOverlay');
+    overlay.classList.add('hiding');
+    setTimeout(() => overlay.remove(), 400);
+    // Welcome XP bonus
+    addXP(25, '🎁 Bono de bienvenida');
+    const name = state.userName || '';
+    showToast(`¡Hola${name ? ' ' + name : ''}! Bienvenido/a a FluentFlow 🚀`, 'success');
+  }, 600);
+}
+
+function launchConfetti() {
+  const colors = ['#6c63ff','#ff6584','#43e97b','#f7971e','#fff','#38f9d7'];
+  for(let i = 0; i < 60; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `
+      left: ${Math.random() * 100}vw;
+      top: -10px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      width: ${4 + Math.random() * 8}px;
+      height: ${4 + Math.random() * 8}px;
+      animation-duration: ${1.5 + Math.random() * 2}s;
+      animation-delay: ${Math.random() * .5}s;
+      border-radius: ${Math.random() > .5 ? '50%' : '2px'};
+    `;
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 3500);
+  }
+}
+
+// Show tour only for new users (no tourDone in state)
+function initWelcomeTour() {
+  if(state.tourDone) {
+    document.getElementById('welcomeOverlay').remove();
+    return;
+  }
+  buildWelcomeDots();
+  // Pre-select default time option
+  document.querySelector('.wm-time-btn.selected')?.classList.add('selected');
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+
+initHome();
+initConversation();
+renderSentencePage();
+initWelcomeTour();
+
+// Mark today as active if user opens the app
+const today = new Date().toDateString();
+if(!state.weekActivity[today]) {
+  state.weekActivity[today] = true;
+  state.streak = (state.streak || 0) + 1;
+  saveState();
+}
+
+</script>
+</body>
+</html>
